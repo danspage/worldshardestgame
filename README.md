@@ -6,5 +6,5 @@ Made by Dan Convey
 - Original game: http://armorgames.com/
 - Sound effects: http://www.flashkit.com/
 - Music: http://snayk.newgrounds.com/
-# Play the Original
+# Play the original
 Play the original game here: http://www.worldshardestgame.org/
