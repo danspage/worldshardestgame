@@ -15,4 +15,4 @@ http://www.worldshardestgame.org/
 
 Included Libraries
 ------------------
-- [TinySound](https://github.com/finnkuusisto/TinySound)
+- [TinySound](https://github.com/finnkuusisto/TinySound) by finnkuusisto
