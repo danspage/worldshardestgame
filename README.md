@@ -1,7 +1,7 @@
 World's Hardest Game
 --------------------
 A java version of World's Hardest Game, originally made by Armor Games and Snubby Land.
---Made by Dan Convey
+<br>Made by Dan Convey
 
 Credits
 -------
