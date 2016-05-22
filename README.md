@@ -1,4 +1,4 @@
-World's Hardest Game <p color="red">WIP</p>
+World's Hardest Game {WIP}
 --------------------
 A java version of World's Hardest Game, originally made by Armor Games and Snubby Land, recreated by Dan Convey.
 
