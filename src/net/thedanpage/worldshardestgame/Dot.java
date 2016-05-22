@@ -37,6 +37,9 @@ public class Dot {
 	/** Determines if the dot should be moving to pos1 or pos2. */
 	private boolean moveToPos1;
 	
+	/** True if the dot moves vertically, false if it moves horizontally. */
+	private boolean vertMovement;
+	
 	public Dot() {
 		this.x = 0;
 		this.y = 0;
@@ -46,11 +49,12 @@ public class Dot {
 		this.pos2 = new Point(0, 0);
 		this.speed = 1;
 		this.moveToPos1 = true;
+		this.vertMovement = false;
 	}
 	
 	
 	
-	public Dot(int x, int y, Point pos1, Point pos2, double speed, boolean moveToPos1) {
+	public Dot(int x, int y, Point pos1, Point pos2, double speed, boolean moveToPos1, boolean vertMovement) {
 		this.x = x*40;
 		this.y = y*40;
 		this.snapX = x;
@@ -59,6 +63,7 @@ public class Dot {
 		this.pos2 = pos2;
 		this.speed = speed;
 		this.moveToPos1 = moveToPos1;
+		this.vertMovement = vertMovement;
 	}
 	
 	
@@ -77,15 +82,15 @@ public class Dot {
 		this.snapY = (int) (this.y/40);
 		
 		if (moveToPos1) {
-			if (this.pos1.y == this.pos2.y)
+			if (!this.vertMovement)
 				this.x -= this.speed;
-			else if (this.pos1.x == this.pos2.x)
+			else
 				this.y -= this.speed;
 			if (this.snapX < this.pos1.x || this.snapY < this.pos1.y) this.moveToPos1 = false;
 		} else {
-			if (this.pos1.y == this.pos2.y)
+			if (!this.vertMovement)
 				this.x += this.speed;
-			else if (this.pos1.x == this.pos2.x)
+			else
 				this.y += this.speed;
 			if (this.snapX > this.pos2.x || this.snapY > this.pos2.y) this.moveToPos1 = true;
 		}

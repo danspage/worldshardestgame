@@ -219,22 +219,21 @@ public class Level {
 			}
 			
 			//Retrieves the tile data
-			InputStreamReader isr = new InputStreamReader(
-					getClass()
-							.getClassLoader()
-							.getResource(
-									"net/thedanpage/worldshardestgame/resources/maps/level_" + levelNum + ".txt")
-							.openStream());
+			InputStreamReader isr = new InputStreamReader(ClassLoader
+					.getSystemResource(
+							"net/thedanpage/worldshardestgame/resources/maps/level_"
+									+ levelNum + ".txt").openStream());
 			String content = "";
 			Scanner scanner = new Scanner(isr);
 			content = scanner.useDelimiter("\\Z").next();
 			scanner.close();
+			content = content.replaceAll("\n", "");
 
 			for (int i = 0; i < content.length(); i++) {
 				if (i > 299)
 					break;
 				else
-					this.tileMap.add(new Tile((i % 21) * 40, (i / 21) * 40,
+					this.tileMap.add(new Tile((i % 20) * 40, (i / 20) * 40,
 							Character.getNumericValue(content.charAt(i))));
 			}
 
@@ -243,12 +242,9 @@ public class Level {
 			//Retrieves the dot data
 			int lineNum = 0;
 			String line = "";
-			while ((Files.readAllLines(
-					Paths.get(getClass()
-							.getClassLoader()
-							.getResource(
-									"net/thedanpage/worldshardestgame/resources/maps/level_"
-											+ levelNum + ".txt").toURI())).get(19 + lineNum)) != null) {
+			while ((Files.readAllLines(Paths.get(ClassLoader.getSystemResource(
+					"net/thedanpage/worldshardestgame/resources/maps/level_"
+							+ levelNum + ".txt").toURI())).get(19 + lineNum)) != null) {
 				line = Files.readAllLines(
 						Paths.get(getClass()
 								.getClassLoader()
@@ -264,12 +260,13 @@ public class Level {
 							new Point(Integer.parseInt(dotData[3].split(",")[0]),
 									  Integer.parseInt(dotData[3].split(",")[1])),
 							Double.parseDouble(dotData[4]),
-							Boolean.parseBoolean(dotData[5])
+							Boolean.parseBoolean(dotData[5]),
+							Boolean.parseBoolean(dotData[6])
 						));
 				lineNum++;
 			}
 		} catch (IndexOutOfBoundsException e) {
-			System.out.println("\nDot initialization completed.\n\n");
+			System.out.println("\nDot initialization completed.\n");
 		} catch (NullPointerException e) {
 			System.out.println("ERROR: Null pointer!");
 		} catch (Exception e) {
@@ -284,8 +281,8 @@ public class Level {
 			if (t.getType() != 0) {
 				this.levelArea.add(new Area(
 						new Rectangle(t.getX() - 3, t.getY() - 3, 46, 46)));
-				System.out.println("Adding tile " + this.tileMap.indexOf(t));
 			}
+			System.out.println("Adding tile " + this.tileMap.indexOf(t) +", type " + t.getType());
 		}
 		
 		System.out.println("\nNumber of tiles: " + this.tileMap.size());

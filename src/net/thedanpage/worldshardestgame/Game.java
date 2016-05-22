@@ -71,14 +71,14 @@ public class Game extends JPanel implements ActionListener {
 	public static boolean muted = false;
 	
 	/** Image for indicating volume. */
-	ImageIcon speaker = new ImageIcon(getClass().getClassLoader().getResource("net/thedanpage/worldshardestgame/resources/volume.png"));
+	ImageIcon speaker = new ImageIcon(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/volume.png"));
 	
 	/** Background music. */
 	static Thread bgMusic = new Thread() {
 		public void run() {
 			TinySound.init();
-			Music bgmusic = TinySound.loadMusic(Game.class.getResource(
-					"/net/thedanpage/worldshardestgame/resources/music.wav"));
+			Music bgmusic = TinySound.loadMusic(ClassLoader.getSystemResource(
+					"net/thedanpage/worldshardestgame/resources/music.wav"));
 			bgmusic.play(true);
 		}
 	};
@@ -93,10 +93,10 @@ public class Game extends JPanel implements ActionListener {
 	private int introTextOpacity = 0;
 	
 	/** A whoosh sound. */
-	Sound drone = TinySound.loadSound(getClass().getClassLoader().getResource("net/thedanpage/worldshardestgame/resources/drone.wav"));
+	Sound drone = TinySound.loadSound(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/drone.wav"));
 	
 	/** A bell sound. */
-	Sound bell = TinySound.loadSound(getClass().getClassLoader().getResource("net/thedanpage/worldshardestgame/resources/bell.wav"));
+	Sound bell = TinySound.loadSound(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/bell.wav"));
 	
 	
 	
@@ -205,7 +205,7 @@ public class Game extends JPanel implements ActionListener {
 						showIntro = false;
 						gameState = LEVEL_TITLE;
 						
-						levelNum = 1;
+						levelNum = 2;
 						level.init(player, levelNum);
 						
 						//Wait 1.75 seconds then start the level.
@@ -508,6 +508,7 @@ public class Game extends JPanel implements ActionListener {
 			}
 		});
 		
+		frame.setIconImage(new ImageIcon(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/favicon.png")).getImage());
 		frame.setVisible(true);
 		
 	}

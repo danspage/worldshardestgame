@@ -295,8 +295,8 @@ public class Player {
 					if (!Game.muted) {
 						//Play the smack sound
 						TinySound.init();
-						smack = TinySound.loadSound(Player.class.getResource(
-								"/net/thedanpage/worldshardestgame/resources/smack.wav"));
+						smack = TinySound.loadSound(ClassLoader.getSystemResource(
+								"net/thedanpage/worldshardestgame/resources/smack.wav"));
 						smack.play(0.5);
 					}
 				}
