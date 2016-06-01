@@ -70,9 +70,9 @@ public class Dot {
 	
 	public void draw(Graphics g) {
 		g.setColor(Color.BLACK);
-		g.fillOval((int) (this.x - 10) + 20 , (int) (this.y - 10) + 20, 20, 20);
+		g.fillOval((int) (this.x - 10) + 20 , (int) (this.y - 10) + 20 + 22, 20, 20);
 		g.setColor(Color.BLUE);
-		g.fillOval((int) (this.x - 8) + 20 , (int) (this.y - 8) + 20, 16, 16);
+		g.fillOval((int) (this.x - 8) + 20 , (int) (this.y - 8) + 20 + 22, 16, 16);
 	}
 	
 	

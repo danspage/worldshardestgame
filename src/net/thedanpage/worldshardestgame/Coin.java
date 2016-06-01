@@ -8,8 +8,8 @@ public class Coin {
 	
 	private int x;
 	private int y;
-	private int snapX;
-	private int snapY;
+	private double snapX;
+	private double snapY;
 	public boolean collected;
 	
 	public Coin() {
@@ -31,9 +31,9 @@ public class Coin {
 	public void draw(Graphics g) {
 		if (!this.collected) {
 			g.setColor(Color.BLACK);
-			g.fillOval(this.x + 10, this.y + 10, 20, 20);
+			g.fillOval(this.x + 10, this.y + 10 + 22, 20, 20);
 			g.setColor(Color.YELLOW);
-			g.fillOval(this.x + 12, this.y + 12, 16, 16);
+			g.fillOval(this.x + 12, this.y + 12 + 22, 16, 16);
 		}
 	}
 	
@@ -52,15 +52,15 @@ public class Coin {
 	}
 	
 	public int getSnapX() {
-		return this.snapX;
+		return (int) this.snapX;
 	}
 	
 	public int getSnapY() {
-		return this.snapY;
+		return (int) this.snapY;
 	}
 	
 	public Ellipse2D getBounds() {
-		return new Ellipse2D.Double(this.x + 10, this.x + 10, 20, 20);
+		return new Ellipse2D.Double(this.x + 10, this.y + 10, 20, 20);
 	}
 	
 }

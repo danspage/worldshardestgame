@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
@@ -91,9 +92,9 @@ public class Player {
 	
 	public void draw(Graphics g) {
 		g.setColor(new Color(0, 0, 0, (int) opacity));
-		g.fillRect(x - 15, y - 15, 31, 31);
+		g.fillRect(x - 15, y - 15 + 22, 31, 31);
 		g.setColor(new Color(255, 0, 0, (int) opacity));
-		g.fillRect(x-12, y-12,
+		g.fillRect(x-12, y-12 + 22,
 				   25, 25);
 	}
 	
@@ -101,7 +102,7 @@ public class Player {
 	
 	
 	
-	Tile getRelativeTile(Level level, int x1, int y1, int xOff, int yOff) {
+	Tile getRelativeTile(GameLevel level, int x1, int y1, int xOff, int yOff) {
 		for (Tile t : level.getTileMap()) {
 			if (x1/40 + xOff == t.getSnapX() && y1/40 + yOff == t.getSnapY()) {
 				return t;
@@ -114,7 +115,7 @@ public class Player {
 	
 	
 	
-	Tile getTile(Level level) {
+	Tile getTile(GameLevel level) {
 		for (Tile t : level.getTileMap()) {
 			if (this.x/40 == t.getSnapX() && this.y/40 == t.getSnapY()) {
 				return t;
@@ -144,7 +145,7 @@ public class Player {
 	
 	
 	
-	void checkCollisionUp(Level level) {
+	void checkCollisionUp(GameLevel level) {
 		if (getRelativeTile(level, this.x - 14, this.y + 24, 0, -1) != null &&
 				getRelativeTile(level, this.x - 14, this.y + 24, 0, -1).getType() == 0 ||
 				getRelativeTile(level, this.x + 15, this.y + 24, 0, -1) != null &&
@@ -159,7 +160,7 @@ public class Player {
 	
 	
 	
-	void checkCollisionDown(Level level) {
+	void checkCollisionDown(GameLevel level) {
 		if (getRelativeTile(level, this.x - 14, this.y - 24, 0, 1) != null &&
 				getRelativeTile(level, this.x - 14, this.y - 24, 0, 1).getType() == 0 ||
 				getRelativeTile(level, this.x + 15, this.y - 24, 0, 1) != null &&
@@ -174,7 +175,7 @@ public class Player {
 	
 	
 	
-	void checkCollisionLeft(Level level) {
+	void checkCollisionLeft(GameLevel level) {
 		if (getRelativeTile(level, this.x + 24, this.y - 15, -1, 0) != null &&
 				getRelativeTile(level, this.x + 24, this.y - 15, -1, 0).getType() == 0 ||
 				getRelativeTile(level, this.x + 24, this.y + 14, -1, 0) != null &&
@@ -189,7 +190,7 @@ public class Player {
 	
 	
 	
-	void checkCollisionRight(Level level) {
+	void checkCollisionRight(GameLevel level) {
 		if (getRelativeTile(level, this.x - 24, this.y - 15, 1, 0) != null &&
 				getRelativeTile(level, this.x - 24, this.y - 15, 1, 0).getType() == 0 ||
 				getRelativeTile(level, this.x - 24, this.y + 15, 1, 0) != null &&
@@ -204,7 +205,7 @@ public class Player {
 	
 	
 	
-	void respawn(Level level) {
+	void respawn(GameLevel level) {
 		this.x = level.getSpawnPoint().x;
 		this.y = level.getSpawnPoint().y;
 		if (level.coins != null) {
@@ -224,7 +225,7 @@ public class Player {
 	
 	
 	
-	public void update(Level level) {
+	public void update(GameLevel level) {
 		this.snapX = this.x / 40;
 		this.snapY = this.y / 40;
 		
@@ -247,12 +248,14 @@ public class Player {
 				Game.levelNum ++;
 				level.init(this, Game.levelNum);
 				Game.gameState = Game.LEVEL_TITLE;
+				Game.easyLog(Game.logger, Level.INFO, "Game state set to LEVEL_TITLE");
 				
 				//Wait 1.75 seconds then start the level.
 				new Thread() {
 					public void run() {
-						try { Thread.sleep(1750); } catch (InterruptedException e) { e.printStackTrace(); }
+						try { Thread.sleep(1750); } catch (InterruptedException e) { TextFileWriter.appendToFile(Game.logFilePath, e.toString()); }
 						Game.gameState = Game.LEVEL;
+						Game.easyLog(Game.logger, Level.INFO, "Game state set to LEVEL");
 					}
 				}.start();
 			}
@@ -278,7 +281,6 @@ public class Player {
 				this.opacity = 255;
 				this.respawn(level);
 			}
-			
 		}
 		
 		if (this.x > 800) this.x = 0;
@@ -388,5 +390,21 @@ public class Player {
 	
 	public double getOpacity() {
 		return this.opacity;
+	}
+	
+	
+	
+	public void reset() {
+		this.x = 400;
+		this.y = 300;
+		this.snapX = x/40;
+		this.snapY = y/40;
+		this.collidingUp = false;
+		this.collidingDown = false;
+		this.collidingLeft = false;
+		this.collidingRight = false;
+		this.deaths = 0;
+		this.dead = false;
+		this.opacity = 255;
 	}
 }
