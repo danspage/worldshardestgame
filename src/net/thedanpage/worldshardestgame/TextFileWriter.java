@@ -12,15 +12,14 @@ public class TextFileWriter {
 	static BufferedWriter bw = null;
 
 	public static void appendToFile(String filepath, String s) {
-
 		try {
 			// APPEND MODE SET HERE
 			bw = new BufferedWriter(new FileWriter(filepath, true));
 			bw.write(s);
 			bw.newLine();
 			bw.flush();
-		} catch (IOException ioe) {
-			TextFileWriter.appendToFile(Game.logFilePath, ioe.toString());
+		} catch (IOException e) {
+			System.out.println(e);
 		} finally { // always close the file
 			if (bw != null)
 				try {
@@ -29,7 +28,6 @@ public class TextFileWriter {
 					// just ignore it
 				}
 		} // end try/catch/finally
-
-	} // end test()
+	}
 
 } // end class

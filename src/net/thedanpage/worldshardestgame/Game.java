@@ -16,8 +16,11 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
@@ -25,6 +28,7 @@ import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -46,7 +50,8 @@ public class Game extends JPanel implements ActionListener {
 	/** Used for logging information during the game. */
 	public final static Logger logger = Logger.getLogger(Game.class.getName());
 	
-	static String logFilePath;
+	static String logFilePath = System.getProperty("user.home")
+    		  + "/worldshardestgame/logs/" +  new SimpleDateFormat("YY-MM-dd").format(new Date()) + ".log";
 
 	private static final long serialVersionUID = 1L;
 	
@@ -56,14 +61,14 @@ public class Game extends JPanel implements ActionListener {
 	/** The panel used to draw everything. */
 	static JPanel panel = new JPanel();
 	
-	/** The integer used for the game state. */
-	public static int gameState;
-	
 	/** The enum instance used for switching the state of the game. */
 	public static final int INTRO = 0,
 							MAIN_MENU = 1,
 							LEVEL_TITLE = 2,
 							LEVEL = 3;
+	
+	/** The integer used for the game state. */
+	public static int gameState = INTRO;
 	
 	/** Used for when the instructions should be shown. */
 	boolean showIntro = false;
@@ -106,12 +111,14 @@ public class Game extends JPanel implements ActionListener {
 			try {
 				Thread.sleep(1500);
 			} catch (InterruptedException e) {
-				TextFileWriter.appendToFile(logFilePath, e.toString());
+				TextFileWriter.appendToFile(logFilePath, e.getMessage());
 			}
 			gameState = MAIN_MENU;
 			easyLog(logger, Level.INFO, "Game state set to MAIN_MENU");
 		}
 	};
+	
+	public static boolean doLogging = false;
 	
 	
 	//Intro objects
@@ -178,7 +185,7 @@ public class Game extends JPanel implements ActionListener {
 						try {
 							Thread.sleep(3500);
 						} catch (InterruptedException e) {
-							TextFileWriter.appendToFile(logFilePath, e.toString());
+							TextFileWriter.appendToFile(logFilePath, e.getMessage());
 						}
 						fadeOutIntro = true;
 						bgMusic.start();
@@ -235,7 +242,7 @@ public class Game extends JPanel implements ActionListener {
 					//Wait 1.75 seconds then start the level.
 					new Thread() {
 						public void run() {
-							try { Thread.sleep(1750); } catch (InterruptedException e) { TextFileWriter.appendToFile(logFilePath, e.toString()); }
+							try { Thread.sleep(1750); } catch (InterruptedException e) { TextFileWriter.appendToFile(logFilePath, e.getMessage()); }
 							gameState = LEVEL;
 							easyLog(logger, Level.INFO, "Game state set to LEVEL");
 						}
@@ -363,7 +370,17 @@ public class Game extends JPanel implements ActionListener {
 	
 	
 	
-	/** Draw a string centered on its x axis. */
+	/** Draw a string centered on its x axis.
+	 * 
+	 * @param text
+	 * 		the text to be drawn
+	 * @param x
+	 * 		the x coordinate of the text
+	 * @param y
+	 * 		the y coordinate of the text
+	 * @param g
+	 * 		the graphics the text will be drawn with
+	 */
 	void drawCenteredString(String s, int w, int h, Graphics g) {
 		FontMetrics fm = g.getFontMetrics();
 		int x = (w*2 - fm.stringWidth(s)) / 2;
@@ -374,7 +391,17 @@ public class Game extends JPanel implements ActionListener {
 	
 	
 	
-	/** Draw a string centered on its x axis. */
+	/** Draw a string centered on its x axis.
+	 * 
+	 * @param text
+	 * 		the text to be drawn
+	 * @param x
+	 * 		the x coordinate of the text
+	 * @param y
+	 * 		the y coordinate of the text
+	 * @param g2
+	 * 		the 2D graphics the text will be drawn with
+	 */
 	void drawCenteredString(String s, int w, int h, Graphics2D g2) {
 		FontMetrics fm = g2.getFontMetrics();
 		int x = (w*2 - fm.stringWidth(s)) / 2;
@@ -385,7 +412,19 @@ public class Game extends JPanel implements ActionListener {
 	
 	
 	
-	/** Draw the outline of a string of text. */
+	/** Draw the outline of a string of text.
+	 * 
+	 * @param text
+	 * 		the text to be drawn
+	 * @param x
+	 * 		the x coordinate of the text
+	 * @param y
+	 * 		the y coordinate of the text
+	 * @param thickness
+	 * 		the thickness of the outline
+	 * @param g2
+	 * 		the 2D graphics the text will be drawn with
+	 */
 	void drawTextOutline(String text, int x, int y, int thickness, Graphics2D g2) {
 		TextLayout tl = new TextLayout(text, g2.getFont(), new FontRenderContext(null,false,false));
 		AffineTransform textAt = new AffineTransform();
@@ -399,7 +438,17 @@ public class Game extends JPanel implements ActionListener {
 	
 	
 	
-	/** Draw a string, with the use of \n implemented. */
+	/** Draw a string, with the use of \n implemented.
+	 * 
+	 * @param text
+	 * 		the text to be drawn
+	 * @param x
+	 * 		the x coordinate of the text
+	 * @param y
+	 * 		the y coordinate of the text
+	 * @param g
+	 * 		the graphics the text will be drawn with
+	 */
 	void drawString(String text, int x, int y, Graphics g) {
 	    for (String line : text.split("\n"))
 	        g.drawString(line, x, y += g.getFontMetrics().getHeight());
@@ -412,6 +461,8 @@ public class Game extends JPanel implements ActionListener {
 	/**
 	 * Pause the current thread for a certain number of seconds.
 	 * 
+	 * @param sec
+	 * 		The number of seconds for the thread to wait
 	 * @throws InterruptedException
 	 */
 	void wait(double sec) throws InterruptedException {
@@ -422,7 +473,7 @@ public class Game extends JPanel implements ActionListener {
 	
 	
 	
-	/** Resets all of the player's variables. */
+	/** Resets all of the player's variables.*/
 	void resetPlayer() {
 		player = new Player();
 	}
@@ -431,24 +482,67 @@ public class Game extends JPanel implements ActionListener {
 	
 	
 	
-	static void easyLog(Logger logger, Level level, String s) {
-		logger.setLevel(level);
-		
-		if (level == Level.CONFIG) logger.config(s);
-		else if (level == Level.FINE) logger.fine(s);
-		else if (level == Level.FINER) logger.finer(s);
-		else if (level == Level.FINEST) logger.finest(s);
-		else if (level == Level.INFO) logger.info(s);
-		else if (level == Level.SEVERE) logger.severe(s);
-		else if (level == Level.WARNING) logger.warning(s);
-		
-		else {
-			logger.setLevel(Level.WARNING);
-			logger.warning("Logging error");
+	/**
+	 * Convert an exception to a String with full stack trace
+	 * 
+	 * @param ex
+	 *            the exception
+	 * @return A string with the full stacktrace error text
+	 */
+	public static String getStringFromStackTrace(Throwable ex) {
+		if (ex == null) {
+			return "";
 		}
-		
-		TextFileWriter.appendToFile(logFilePath,
-		            		  new SimpleDateFormat("MMM dd, YYYY h:mm:ss a").format(new Date()) + " net.thedanpage.worldshardestgame easyLog\n" + level + ": " + s);
+		StringWriter str = new StringWriter();
+		PrintWriter writer = new PrintWriter(str);
+		try {
+			ex.printStackTrace(writer);
+			return str.getBuffer().toString();
+		} finally {
+			try {
+				str.close();
+				writer.close();
+			} catch (IOException e) {
+				// ignore
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Easily log a string of text, and write it to the log file
+	 * 
+	 * @param logger
+	 * 		The logger for the string to be logged with
+	 * @param level
+	 * 		The level of the logger
+	 * @param s
+	 * 		The string of text to be logged
+	 */
+	static void easyLog(Logger logger, Level level, String s) {
+		if (doLogging) {
+			logger.setLevel(level);
+			
+			if (level == Level.CONFIG) logger.config(s);
+			else if (level == Level.FINE) logger.fine(s);
+			else if (level == Level.FINER) logger.finer(s);
+			else if (level == Level.FINEST) logger.finest(s);
+			else if (level == Level.INFO) logger.info(s);
+			else if (level == Level.SEVERE) logger.severe(s);
+			else if (level == Level.WARNING) logger.warning(s);
+			
+			else {
+				logger.setLevel(Level.WARNING);
+				logger.warning("Logging error");
+			}
+			
+			TextFileWriter.appendToFile(logFilePath, new SimpleDateFormat(
+					"MMM dd, YYYY h:mm:ss a").format(new Date())
+					+ " net.thedanpage.worldshardestgame easyLog\n" + level + ": " + s);
+		}
 	}
 	
 	
@@ -456,22 +550,38 @@ public class Game extends JPanel implements ActionListener {
 	
 	
 	public static void main(String[] args) {
+		int option = JOptionPane.showConfirmDialog(null, "Would you like to enable logging?", "Setup", JOptionPane.YES_NO_OPTION);
+		if (option == JOptionPane.YES_OPTION) doLogging = true;
+		else doLogging = false;
 		
-		logFilePath = System.getProperty("user.home")
-      		  + "/WorldsHardestGame/logs/" +  new SimpleDateFormat("YY-MM-dd").format(new Date()) + ".txt";
-		
-		try {
-			if (new BufferedReader(new FileReader(logFilePath)).readLine() != null) {
-				TextFileWriter.appendToFile(logFilePath, "\n");
+		if (doLogging) {
+			
+			//Create directory for logs if it does not exist
+			if (!new File(System.getProperty("user.home") + "/worldshardestgame/logs").isDirectory()) {
+				new File(System.getProperty("user.home") + "/worldshardestgame/logs").mkdirs();
 			}
-		} catch (IOException e) {
-			TextFileWriter.appendToFile(logFilePath, e.toString());
+			
+			if (new File(logFilePath + ".zip").exists()) {
+				LogZipper.unzip(
+					System.getProperty("user.home") + "/worldshardestgame/logs", logFilePath + ".zip");
+				new File(logFilePath + ".zip").delete();
+			}
+			
+			try {
+				if (new File(logFilePath).exists() && new BufferedReader(new FileReader(logFilePath)).readLine() != null) {
+					TextFileWriter.appendToFile(logFilePath, "\n");
+				}
+			} catch (IOException e) {
+				easyLog(logger, Level.WARNING, getStringFromStackTrace(e));
+			}
 		}
 		
 		easyLog(logger, Level.INFO, "Starting The World's Hardest Game");
 		
 		TinySound.init();
 		easyLog(logger, Level.INFO, "TinySound initialized");
+		
+		if (muted) TinySound.setGlobalVolume(0);
 		
 		window = new Game();
 

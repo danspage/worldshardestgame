@@ -115,87 +115,9 @@ public class Input {
 					enter.isPressed = true;
 					enter.numTimesPressed++;
 				}
-				
-				Game.frame.addMouseMotionListener(new MouseMotionListener() {
-
-					public void mouseDragged(MouseEvent e) {
-					}
-
-					public void mouseMoved(MouseEvent e) {
-						mouseCoords = e.getPoint();
-					}
-					
-				});
-				
-				Game.frame.addKeyListener(new KeyListener() {
-
-					public void keyTyped(KeyEvent e) {
-					}
-
-					public void keyPressed(KeyEvent e) {
-						if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-							left.isPressed = true;
-							left.numTimesPressed++;
-						}
-						if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-							right.isPressed = true;
-							right.numTimesPressed++;
-						}
-						if (e.getKeyCode() == KeyEvent.VK_UP) {
-							up.isPressed = true;
-							up.numTimesPressed++;
-						}
-						if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-							down.isPressed = true;
-							down.numTimesPressed++;
-						}
-						if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-							enter.isPressed = true;
-							enter.numTimesPressed++;
-						}
-						if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-							escape.isPressed = true;
-							escape.numTimesPressed++;
-						}
-						if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-							space.isPressed = true;
-							space.numTimesPressed++;
-						}
-					}
-
-					public void keyReleased(KeyEvent e) {
-						
-						if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-							left.isPressed = false;
-						}
-						if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-							right.isPressed = false;
-						}
-						if (e.getKeyCode() == KeyEvent.VK_UP) {
-							up.isPressed = false;
-						}
-						if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-							down.isPressed = false;
-						}
-						if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-							enter.isPressed = false;
-						}
-						if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-							escape.isPressed = false;
-						}
-						if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-							space.isPressed = false;
-						}
-					}
-				});
-				
-				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-					escape.isPressed = true;
-					escape.numTimesPressed++;
-				}
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 					space.isPressed = true;
-					space.numTimesPressed++;
+					space.numTimesPressed ++;
 				}
 			}
 
@@ -228,7 +150,11 @@ public class Input {
 		Game.frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
+				
 				Game.easyLog(Game.logger, Level.INFO, "Shutting down...");
+				
+				if (Game.doLogging) LogZipper.zipLog();
+				
 				System.exit(0);
 			}
 		});

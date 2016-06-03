@@ -14,7 +14,7 @@ public class PropLoader {
 			prop.load(stream);
 			return prop.getProperty(property);
 		} catch (IOException e) {
-			TextFileWriter.appendToFile(Game.logFilePath, e.toString());
+			TextFileWriter.appendToFile(Game.logFilePath, Game.getStringFromStackTrace(e));
 		}
 		return null;
 	}

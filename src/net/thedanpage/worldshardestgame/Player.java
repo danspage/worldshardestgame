@@ -242,9 +242,11 @@ public class Player {
 		}
 		
 		if (level.getTileMap() != new ArrayList<Tile>()) {
+			
 			if (this.getTile(level) != null
 					&& this.getTile(level).getType() == 3
 					&& level.allCoinsCollected()) {
+				
 				Game.levelNum ++;
 				level.init(this, Game.levelNum);
 				Game.gameState = Game.LEVEL_TITLE;
@@ -253,7 +255,11 @@ public class Player {
 				//Wait 1.75 seconds then start the level.
 				new Thread() {
 					public void run() {
-						try { Thread.sleep(1750); } catch (InterruptedException e) { TextFileWriter.appendToFile(Game.logFilePath, e.toString()); }
+						try {
+							Thread.sleep(1750);
+						} catch (InterruptedException e) {
+							Game.easyLog(Game.logger, Level.SEVERE, Game.getStringFromStackTrace(e));
+						}
 						Game.gameState = Game.LEVEL;
 						Game.easyLog(Game.logger, Level.INFO, "Game state set to LEVEL");
 					}

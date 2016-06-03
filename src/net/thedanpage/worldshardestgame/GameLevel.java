@@ -8,7 +8,6 @@ import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
 
@@ -41,7 +40,7 @@ public class GameLevel {
 		this.dots = new ArrayList<Dot>();
 		this.spawnPoint = new Point(20, 20);
 		this.id = -1;
-		this.levelTitle = "";
+		this.levelTitle = "\"Intimidating message\nhere\"";
 	}
 	
 	public GameLevel(Point spawn, int id) {
@@ -50,7 +49,7 @@ public class GameLevel {
 		this.dots = new ArrayList<Dot>();
 		this.spawnPoint = spawn;
 		this.id = id;
-		this.levelTitle = "";
+		this.levelTitle = "\"Intimidating message\nhere\"";
 	}
 	
 	public Point getSpawnPoint() {
@@ -128,7 +127,7 @@ public class GameLevel {
 			}
 		} catch (Exception e) {
 			System.out.println("File not found.");
-			TextFileWriter.appendToFile(Game.logFilePath, e.toString());
+			TextFileWriter.appendToFile(Game.logFilePath, Game.getStringFromStackTrace(e));
 		}
 	}
 	
@@ -185,6 +184,12 @@ public class GameLevel {
 		
 		//Clears the coin data
 		this.coins = new ArrayList<Coin>();
+		
+		//Clears the level area data
+		this.levelArea = new Area();
+		
+		//Resets the level title
+		this.levelTitle = "\"Intimidating message\nhere\"";
 		
 		try {
 			this.spawnPoint = new Point(
@@ -258,17 +263,8 @@ public class GameLevel {
 							new Rectangle(t.getX() - 3, t.getY() - 3 + 22, 46, 46)));
 				}
 			}
-		} catch (IndexOutOfBoundsException | NoSuchElementException e) {
-			Game.easyLog(Game.logger, Level.INFO, "Dot initialization completed.");
-		} catch (NullPointerException e) {
-			Game.easyLog(Game.logger, Level.SEVERE, "Null pointer!");
-			TextFileWriter.appendToFile(Game.logFilePath, e.toString());
 		} catch (Exception e) {
-			if (e.getClass().getName() != "java.lang.IndexOutOfBoundsException" &&
-					e.getClass().getName() != "java.lang.NullPointerException") {
-				System.out.println("ERROR: Map unable to be loaded.");
-				Game.easyLog(Game.logger, Level.SEVERE, "Map unable to be loaded:\n" + e);
-			}
+			Game.easyLog(Game.logger, Level.SEVERE, "Map unable to be loaded:\n" + Game.getStringFromStackTrace(e));
 		}
 		//Retrieves the dot data
 		try {
@@ -297,7 +293,8 @@ public class GameLevel {
 			}
 			Game.easyLog(Game.logger, Level.INFO, "All dots have been added");
 		} catch (Exception e) {
-			if (e.getClass().getName() != "java.lang.ArrayIndexOutOfBoundsException") e.printStackTrace();
+			if (e.getClass().getName() != "java.lang.ArrayIndexOutOfBoundsException")
+				Game.easyLog(Game.logger, Level.SEVERE, "Dots unable to be loaded:\n" + Game.getStringFromStackTrace(e));
 		}
 		if (this.tileMap.size() == 300) Game.easyLog(Game.logger, Level.INFO, "All tiles have been added");
 		else Game.easyLog(Game.logger, Level.WARNING, "Not all tiles were added");
