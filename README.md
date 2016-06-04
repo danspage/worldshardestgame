@@ -15,7 +15,7 @@ http://www.worldshardestgame.org/
 
 Make a new level
 ----------------
-Check out the project wiki for a tutorial on creating levels for the game!
+Check out the [project wiki](https://github.com/Dan95363/worldshardestgame/wiki) for a tutorial on creating levels for the game!
 
 Included Libraries
 ------------------
