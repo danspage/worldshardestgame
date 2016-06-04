@@ -143,10 +143,7 @@ public class Game extends JPanel implements ActionListener {
 		super.paintComponent(g);
 		
 		update(g);
-		
-		//Garbage disposal
-		Toolkit.getDefaultToolkit().sync();
-		g.dispose();
+		render(g);
 	
 		//Start the timer
 		t.start();
@@ -162,13 +159,7 @@ public class Game extends JPanel implements ActionListener {
 	/** Update the game and draw the graphics. */
 	public void update(Graphics g) {
 		
-		final Graphics2D g2 = (Graphics2D) g;
-		
 		if (gameState == INTRO) {
-			
-			//Background
-			g2.setPaint(new GradientPaint(0, 0, new Color(213, 213, 255), 0, 600, Color.WHITE));
-			g2.fillRect(0, 0, 800, 600);
 			
 			if (introTextOpacity == 0 && !fadeOutIntro) {
 				drone.play();
@@ -199,10 +190,6 @@ public class Game extends JPanel implements ActionListener {
 					if (introTextOpacity < 0) introTextOpacity = 0;
 				}
 			}
-			
-			g2.setFont(new Font("Tahoma", Font.BOLD, 50));
-			g2.setColor(new Color(0, 0, 0, introTextOpacity));
-			drawCenteredString("Made by Dan95363", 400, 250, g2);
 				
 			if (fadeOutIntro && introTextOpacity == 0 && !endIntro.isAlive()) {
 				endIntro.start();
@@ -215,19 +202,6 @@ public class Game extends JPanel implements ActionListener {
 		} else if (gameState == MAIN_MENU) {
 				
 			if (showIntro) {
-				//Instructions
-				g2.setFont(new Font("Tahoma", Font.BOLD, 20));
-				g2.setColor(Color.BLACK);
-				drawString("You are the red square. Avoid the blue circles and collect the\n" +
-						   "yellow circles. Once you have collected all of the yellow\n" +
-						   "circles, move to the green beacon to complete the level.\n" +
-						   "Some levels consist of more than one beacon; the\n" +
-						   "intermediary beacons act as checkpoints. You must complete\n" +
-						   "all 30 levels in order to submit your score. Your score is a\n" +
-						   "reflection of how many times you have died; the less, the better.", 30, 40, g2);
-				
-				g2.setColor(Color.BLUE);
-				drawCenteredString("Press enter to continue", 400, 350, g2);
 				
 				if (Input.enter.isPressed) {
 					showIntro = false;
@@ -248,6 +222,59 @@ public class Game extends JPanel implements ActionListener {
 						}
 					}.start();
 				}
+			} else {
+				
+				//Click to start the first level
+				if (Input.mousePressed && Input.mouseCoords.x > 304 && Input.mouseCoords.y < 323
+						&& Input.mouseCoords.x < 515 && Input.mouseCoords.y > 192) {
+					showIntro = true;
+					bell.play();
+				}	
+			}
+			
+		} else if (gameState == LEVEL) {
+			
+			if (Input.mouseOnWindow && Input.mouseCoords.x <= 65 && Input.mouseCoords.y <= 22
+					&& Input.mousePressed) {
+				gameState = MAIN_MENU;
+				easyLog(logger, Level.INFO, "Game state set to MAIN_MENU");
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	public void render(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		
+		if (gameState == INTRO) {
+			
+			//Background
+			g2.setPaint(new GradientPaint(0, 0, new Color(213, 213, 255), 0, 600, Color.WHITE));
+			g2.fillRect(0, 0, 800, 600);
+			
+			g2.setFont(new Font("Tahoma", Font.BOLD, 50));
+			g2.setColor(new Color(0, 0, 0, introTextOpacity));
+			drawCenteredString("Made by Dan95363", 400, 250, g2);
+			
+		} else if (gameState == MAIN_MENU) {
+			
+			if (showIntro) {
+				//Instructions
+				g2.setFont(new Font("Tahoma", Font.BOLD, 20));
+				g2.setColor(Color.BLACK);
+				drawString("You are the red square. Avoid the blue circles and collect the\n" +
+						   "yellow circles. Once you have collected all of the yellow\n" +
+						   "circles, move to the green beacon to complete the level.\n" +
+						   "Some levels consist of more than one beacon; the\n" +
+						   "intermediary beacons act as checkpoints. You must complete\n" +
+						   "all 30 levels in order to submit your score. Your score is a\n" +
+						   "reflection of how many times you have died; the less, the better.", 30, 40, g2);
+				
+				g2.setColor(Color.BLUE);
+				drawCenteredString("Press enter to continue", 400, 350, g2);
 			} else {
 				//Background
 				g2.setPaint(new GradientPaint(0, 0, new Color(213, 213, 255), 0, 600, Color.WHITE));
@@ -279,24 +306,11 @@ public class Game extends JPanel implements ActionListener {
 				g2.setColor(Color.BLACK);
 				drawTextOutline("PLAY", 315, 255, 3, g2);
 				drawTextOutline("GAME", 302, 320, 3, g2);
-				
-				//Click to start the first level
-				if (Input.mousePressed && Input.mouseCoords.x > 304 && Input.mouseCoords.y < 323
-						&& Input.mouseCoords.x < 515 && Input.mouseCoords.y > 192) {
-					showIntro = true;
-					bell.play();
-				}
-				
 			}
-			
-			
-			
-			
 			
 		} else if (gameState == LEVEL) {
 			
 			if (levelNum != 0) {
-				
 				level.drawTiles(g);
 				
 				level.drawCoins(g);
@@ -316,12 +330,6 @@ public class Game extends JPanel implements ActionListener {
 				
 				if (Input.mouseOnWindow && Input.mouseCoords.x <= 65 && Input.mouseCoords.y <= 22) {
 					g.setColor(Color.LIGHT_GRAY);
-					if (Input.mousePressed) {
-						showIntro = false;
-						gameState = MAIN_MENU;
-						easyLog(logger, Level.INFO, "Game state set to MAIN_MENU");
-						bell.play();
-					}
 				}
 				g.drawString("MENU", 0, 17);
 				
@@ -333,7 +341,6 @@ public class Game extends JPanel implements ActionListener {
 			}
 			
 		} else if (gameState == LEVEL_TITLE) {
-			
 			//Background
 			g2.setPaint(new GradientPaint(0, 0, new Color(213, 213, 255), 0, 600, Color.WHITE));
 			g2.fillRect(0, 0, 800, 600);
@@ -345,7 +352,6 @@ public class Game extends JPanel implements ActionListener {
 			for (String s : level.getTitle().split("\n")) {
 				drawCenteredString(s, 400, textY += g.getFontMetrics().getHeight(), g);
 			}
-			
 		}
 		
 		if (gameState != LEVEL) {
@@ -356,6 +362,8 @@ public class Game extends JPanel implements ActionListener {
 			}
 		}
 		
+		Toolkit.getDefaultToolkit().sync();
+		g.dispose();
 	}
 	
 	
@@ -550,7 +558,11 @@ public class Game extends JPanel implements ActionListener {
 	
 	
 	public static void main(String[] args) {
-		int option = JOptionPane.showConfirmDialog(null, "Would you like to enable logging?", "Setup", JOptionPane.YES_NO_OPTION);
+		int option = JOptionPane.showConfirmDialog(
+				null,
+				"Would you like to enable logging to " + System.getProperty("user.home") + "/worldshardestgame/logs?",
+				"Setup",
+				JOptionPane.YES_NO_OPTION);
 		if (option == JOptionPane.YES_OPTION) doLogging = true;
 		else doLogging = false;
 		
