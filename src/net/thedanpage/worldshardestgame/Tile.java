@@ -19,9 +19,8 @@ public class Tile {
 	/** Determines what type of tile it is.
 	 * 0 = background
 	 * 1 = floor tile
-	 * 2 = border
-	 * 3 = checkpoint
-	 * 4 = goal */
+	 * 2 = checkpoint
+	 * 3 = goal */
 	private int type = 0;
 	
 	
