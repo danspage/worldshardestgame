@@ -112,6 +112,8 @@ public class Game extends JPanel implements ActionListener {
 	
 	static boolean doLogging = false;
 	
+	private static int totalLevels = 0;
+	
 	
 	//Intro objects
 	
@@ -324,7 +326,8 @@ public class Game extends JPanel implements ActionListener {
 				
 				g.setColor(Color.WHITE);
 				g.setFont(new Font("Tahoma", Font.BOLD, 18));
-				drawCenteredString("Deaths: " + player.getDeaths(), 400, 17, g);
+				drawRightJustifiedString("Deaths: " + player.getDeaths(), 750, 17, g);
+				drawCenteredString(levelNum + "/" + totalLevels, 400, 17, g);
 				
 				if (Input.mouseOnWindow && Input.mouseCoords.x <= 65 && Input.mouseCoords.y <= 22) {
 					g.setColor(Color.LIGHT_GRAY);
@@ -411,6 +414,27 @@ public class Game extends JPanel implements ActionListener {
 		FontMetrics fm = g2.getFontMetrics();
 		int x = (w*2 - fm.stringWidth(s)) / 2;
 		g2.drawString(s, x, h);
+	}
+	
+	
+	
+	
+	
+	/** Draw a right-justified string.
+	 * 
+	 * @param text
+	 * 		the text to be drawn
+	 * @param x
+	 * 		the x coordinate of the text
+	 * @param y
+	 * 		the y coordinate of the text
+	 * @param g2
+	 * 		the 2D graphics the text will be drawn with
+	 */
+	private void drawRightJustifiedString(String s, int w, int h, Graphics g) {
+		FontMetrics fm = g.getFontMetrics();
+		int x = (w - fm.stringWidth(s));
+		g.drawString(s, x, h);
 	}
 	
 	
@@ -560,6 +584,16 @@ public class Game extends JPanel implements ActionListener {
 			} catch (IOException e) {
 				Game.easyLog(Game.logger, Level.WARNING, Game.getStringFromStackTrace(e));
 			}
+		}
+		
+		try {
+			while (new File(ClassLoader
+					.getSystemResource("net/thedanpage/worldshardestgame/resources/maps/level_" + (totalLevels+1) + ".txt").toURI())
+							.exists()) {
+				totalLevels++;
+			}
+		} catch (Exception e) {
+			System.out.println("Total levels: " + totalLevels);
 		}
 		
 		Game.easyLog(Game.logger, Level.INFO, "Starting The World's Hardest Game");
