@@ -93,7 +93,7 @@ public class Game extends JPanel implements ActionListener {
 		public void run() {
 			TinySound.init();
 			Music bgmusic = TinySound.loadMusic(ClassLoader.getSystemResource(
-					"net/thedanpage/worldshardestgame/resources/music.wav"));
+					"net/thedanpage/worldshardestgame/resources/music.ogg"));
 			bgmusic.play(true);
 		}
 	};
@@ -122,7 +122,7 @@ public class Game extends JPanel implements ActionListener {
 	private int introTextOpacity = 0;
 	
 	/** A whoosh sound. */
-	Sound drone = TinySound.loadSound(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/drone.wav"));
+	Sound drone = TinySound.loadSound(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/drone.ogg"));
 	
 	/** A bell sound. */
 	Sound bell = TinySound.loadSound(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/bell.wav"));

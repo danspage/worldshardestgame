@@ -236,7 +236,8 @@ public class Player {
 					
 					//Coin sound
 					TinySound.init();
-					TinySound.loadSound(Player.class.getClassLoader().getResource("net/thedanpage/worldshardestgame/resources/ding.wav")).play();
+					TinySound.loadSound(Player.class.getClassLoader()
+							.getResource("net/thedanpage/worldshardestgame/resources/ding.wav")).play();
 				}
 			}
 		}
@@ -276,12 +277,7 @@ public class Player {
 		checkCollisionLeft(level);
 		checkCollisionRight(level);
 		
-		if (!this.dead) {
-			if (Input.up.isPressed && !this.collidingUp) this.y --;
-			if (Input.down.isPressed && !this.collidingDown) this.y ++;
-			if (Input.left.isPressed && !this.collidingLeft) this.x --;
-			if (Input.right.isPressed && !this.collidingRight) this.x ++;
-		} else {
+		if (this.dead) {
 			this.opacity -= 255/75;
 			
 			if (this.opacity < 0) this.opacity = 0;
@@ -291,6 +287,11 @@ public class Player {
 				this.opacity = 255;
 				this.respawn(level);
 			}
+		} else {
+			if (Input.up.isPressed && !this.collidingUp) this.y --;
+			if (Input.down.isPressed && !this.collidingDown) this.y ++;
+			if (Input.left.isPressed && !this.collidingLeft) this.x --;
+			if (Input.right.isPressed && !this.collidingRight) this.x ++;
 		}
 		
 		if (this.x > 800) this.x = 0;
@@ -307,9 +308,8 @@ public class Player {
 					if (!Game.muted) {
 						//Play the smack sound
 						TinySound.init();
-						smack = TinySound.loadSound(ClassLoader.getSystemResource(
-								"net/thedanpage/worldshardestgame/resources/smack.wav"));
-						smack.play(0.5);
+						TinySound.loadSound(ClassLoader.getSystemResource(
+								"net/thedanpage/worldshardestgame/resources/smack.wav")).play();
 					}
 				}
 			}
