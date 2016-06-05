@@ -236,34 +236,38 @@ public class Player {
 					
 					//Coin sound
 					TinySound.init();
-					TinySound.loadSound(Player.class.getClassLoader().getResource("net/thedanpage/worldshardestgame/resources/ding.wav")).play(2);
+					TinySound.loadSound(Player.class.getClassLoader().getResource("net/thedanpage/worldshardestgame/resources/ding.wav")).play();
 				}
 			}
 		}
 		
 		if (level.getTileMap() != new ArrayList<Tile>()) {
 			
-			if (this.getTile(level) != null
-					&& this.getTile(level).getType() == 3
-					&& level.allCoinsCollected()) {
+			if (level.allCoinsCollected()) {
 				
-				Game.levelNum ++;
-				level.init(this, Game.levelNum);
-				Game.gameState = Game.LEVEL_TITLE;
-				Game.easyLog(Game.logger, Level.INFO, "Game state set to LEVEL_TITLE");
-				
-				//Wait 1.75 seconds then start the level.
-				new Thread() {
-					public void run() {
-						try {
-							Thread.sleep(1750);
-						} catch (InterruptedException e) {
-							Game.easyLog(Game.logger, Level.SEVERE, Game.getStringFromStackTrace(e));
-						}
-						Game.gameState = Game.LEVEL;
-						Game.easyLog(Game.logger, Level.INFO, "Game state set to LEVEL");
+				for (Tile t : level.getTileMap()) {
+					
+					if (t.getType() == 3 && this.collidesWith(t.getBounds())) {
+					
+						Game.levelNum ++;
+						level.init(this, Game.levelNum);
+						Game.gameState = Game.LEVEL_TITLE;
+						Game.easyLog(Game.logger, Level.INFO, "Game state set to LEVEL_TITLE");
+						
+						//Wait 1.75 seconds then start the level.
+						new Thread() {
+							public void run() {
+								try {
+									Thread.sleep(1750);
+								} catch (InterruptedException e) {
+									Game.easyLog(Game.logger, Level.SEVERE, Game.getStringFromStackTrace(e));
+								}
+								Game.gameState = Game.LEVEL;
+								Game.easyLog(Game.logger, Level.INFO, "Game state set to LEVEL");
+							}
+						}.start();
 					}
-				}.start();
+				}
 			}
 		}
 		
@@ -412,5 +416,18 @@ public class Player {
 		this.deaths = 0;
 		this.dead = false;
 		this.opacity = 255;
+	}
+
+
+
+
+
+	@Override
+	public String toString() {
+		return "Player [x=" + x + ", y=" + y + ", snapX=" + snapX + ", snapY="
+				+ snapY + ", collidingUp=" + collidingUp + ", collidingDown="
+				+ collidingDown + ", collidingLeft=" + collidingLeft
+				+ ", collidingRight=" + collidingRight + ", deaths=" + deaths
+				+ ", dead=" + dead + "]";
 	}
 }

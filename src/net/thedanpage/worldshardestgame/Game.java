@@ -2,6 +2,7 @@ package net.thedanpage.worldshardestgame;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -39,13 +40,10 @@ import kuusisto.tinysound.TinySound;
 public class Game extends JPanel implements ActionListener {
 	
 	/** An instance of the game. */
-	static Game window;
+	private static Game game;
 	
 	/** The timer used for the game's clock. */
-	Timer t = new Timer(5, this);
-	
-	/** The number of game ticks that have passed. Resets at 1000 ticks. */
-	public static int ticks = 0;
+	private Timer t = new Timer(5, this);
 	
 	/** Used for logging information during the game. */
 	public final static Logger logger = Logger.getLogger(Game.class.getName());
@@ -58,42 +56,36 @@ public class Game extends JPanel implements ActionListener {
 	/** The frame that the panel goes in. */
 	static JFrame frame = new JFrame();
 	
-	/** The panel used to draw everything. */
-	static JPanel panel = new JPanel();
-	
 	/** The enum instance used for switching the state of the game. */
-	public static final int INTRO = 0,
-							MAIN_MENU = 1,
-							LEVEL_TITLE = 2,
-							LEVEL = 3;
+	static final int INTRO = 0, MAIN_MENU = 1, LEVEL_TITLE = 2, LEVEL = 3;
 	
 	/** The integer used for the game state. */
-	public static int gameState = INTRO;
+	static int gameState = INTRO;
 	
 	/** Used for when the instructions should be shown. */
-	boolean showIntro = false;
+	private boolean showIntro = false;
 	
 	
 	/** This is the level that the player is on. */
 	static int levelNum = 0;
 	
 	/** A player class, used to get information about the player. */
-	Player player = new Player();
+	private Player player = new Player();
 	
 	/** The data of the current level. This should be given data in initLevel(). */
-	public static GameLevel level = new GameLevel();
+	static GameLevel level = new GameLevel();
 	
 	/** Controls whether the game has sound or not. */
-	public static boolean muted = false;
+	static boolean muted = false;
 	
 	/** Images for indicating volume. */
-	Image volume_black = new ImageIcon(ClassLoader.getSystemResource(
+	private final Image VOLUME_BLACK = new ImageIcon(ClassLoader.getSystemResource(
 			"net/thedanpage/worldshardestgame/resources/volume_black.png")).getImage();
-	Image volume_black_mute = new ImageIcon(ClassLoader.getSystemResource(
+	private final Image VOLUME_BLACK_MUTE = new ImageIcon(ClassLoader.getSystemResource(
 			"net/thedanpage/worldshardestgame/resources/volume_black_mute.png")).getImage();
-	Image volume_white = new ImageIcon(ClassLoader.getSystemResource(
+	private final Image VOLUME_WHITE = new ImageIcon(ClassLoader.getSystemResource(
 			"net/thedanpage/worldshardestgame/resources/volume_white.png")).getImage();
-	Image volume_white_mute = new ImageIcon(ClassLoader.getSystemResource(
+	private final Image VOLUME_WHITE_MUTE = new ImageIcon(ClassLoader.getSystemResource(
 			"net/thedanpage/worldshardestgame/resources/volume_white_mute.png")).getImage();
 	
 	/** Background music. */
@@ -118,7 +110,7 @@ public class Game extends JPanel implements ActionListener {
 		}
 	};
 	
-	public static boolean doLogging = false;
+	static boolean doLogging = false;
 	
 	
 	//Intro objects
@@ -148,15 +140,17 @@ public class Game extends JPanel implements ActionListener {
 		//Start the timer
 		t.start();
 		
-		ticks++;
-		if (ticks > 999) ticks = 0;
+		Toolkit.getDefaultToolkit().sync();
 	}
 	
 	
 	
 	
 	
-	/** Update the game and draw the graphics. */
+	/** Update the game.
+	 * 
+	 * @param g
+	 * */
 	public void update(Graphics g) {
 		
 		if (gameState == INTRO) {
@@ -246,7 +240,11 @@ public class Game extends JPanel implements ActionListener {
 	
 	
 	
-	public void render(Graphics g) {
+	/** Draw the game's graphics.
+	 * 
+	 * @param g
+	 */
+	private void render(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		
 		if (gameState == INTRO) {
@@ -334,9 +332,9 @@ public class Game extends JPanel implements ActionListener {
 				g.drawString("MENU", 0, 17);
 				
 				if (muted) {
-					g.drawImage(volume_white_mute, 760, -12, null);
+					g.drawImage(VOLUME_WHITE_MUTE, 760, -12, null);
 				} else {
-					g.drawImage(volume_white, 760, -12, null);
+					g.drawImage(VOLUME_WHITE, 760, -12, null);
 				}
 			}
 			
@@ -356,13 +354,12 @@ public class Game extends JPanel implements ActionListener {
 		
 		if (gameState != LEVEL) {
 			if (muted) {
-				g.drawImage(volume_black_mute, 760, -12, null);
+				g.drawImage(VOLUME_BLACK_MUTE, 760, -12, null);
 			} else {
-				g.drawImage(volume_black, 760, -12, null);
+				g.drawImage(VOLUME_BLACK, 760, -12, null);
 			}
 		}
 		
-		Toolkit.getDefaultToolkit().sync();
 		g.dispose();
 	}
 	
@@ -389,7 +386,7 @@ public class Game extends JPanel implements ActionListener {
 	 * @param g
 	 * 		the graphics the text will be drawn with
 	 */
-	void drawCenteredString(String s, int w, int h, Graphics g) {
+	private void drawCenteredString(String s, int w, int h, Graphics g) {
 		FontMetrics fm = g.getFontMetrics();
 		int x = (w*2 - fm.stringWidth(s)) / 2;
 		g.drawString(s, x, h);
@@ -410,7 +407,7 @@ public class Game extends JPanel implements ActionListener {
 	 * @param g2
 	 * 		the 2D graphics the text will be drawn with
 	 */
-	void drawCenteredString(String s, int w, int h, Graphics2D g2) {
+	private void drawCenteredString(String s, int w, int h, Graphics2D g2) {
 		FontMetrics fm = g2.getFontMetrics();
 		int x = (w*2 - fm.stringWidth(s)) / 2;
 		g2.drawString(s, x, h);
@@ -433,7 +430,7 @@ public class Game extends JPanel implements ActionListener {
 	 * @param g2
 	 * 		the 2D graphics the text will be drawn with
 	 */
-	void drawTextOutline(String text, int x, int y, int thickness, Graphics2D g2) {
+	private void drawTextOutline(String text, int x, int y, int thickness, Graphics2D g2) {
 		TextLayout tl = new TextLayout(text, g2.getFont(), new FontRenderContext(null,false,false));
 		AffineTransform textAt = new AffineTransform();
 		textAt.translate(x, y);
@@ -457,33 +454,9 @@ public class Game extends JPanel implements ActionListener {
 	 * @param g
 	 * 		the graphics the text will be drawn with
 	 */
-	void drawString(String text, int x, int y, Graphics g) {
+	private void drawString(String text, int x, int y, Graphics g) {
 	    for (String line : text.split("\n"))
 	        g.drawString(line, x, y += g.getFontMetrics().getHeight());
-	}
-	
-	
-	
-	
-	
-	/**
-	 * Pause the current thread for a certain number of seconds.
-	 * 
-	 * @param sec
-	 * 		The number of seconds for the thread to wait
-	 * @throws InterruptedException
-	 */
-	void wait(double sec) throws InterruptedException {
-		Thread.sleep((int) sec * 1000);
-	}
-	
-	
-	
-	
-	
-	/** Resets all of the player's variables.*/
-	void resetPlayer() {
-		player = new Player();
 	}
 	
 	
@@ -558,57 +531,58 @@ public class Game extends JPanel implements ActionListener {
 	
 	
 	public static void main(String[] args) {
+		
 		int option = JOptionPane.showConfirmDialog(
-				null,
+				new Dialog(frame, true),
 				"Would you like to enable logging to " + System.getProperty("user.home") + "/worldshardestgame/logs?",
 				"Setup",
 				JOptionPane.YES_NO_OPTION);
-		if (option == JOptionPane.YES_OPTION) doLogging = true;
-		else doLogging = false;
+		if (option == JOptionPane.YES_OPTION) Game.doLogging = true;
+		else Game.doLogging = false;
 		
-		if (doLogging) {
+		if (Game.doLogging) {
 			
 			//Create directory for logs if it does not exist
 			if (!new File(System.getProperty("user.home") + "/worldshardestgame/logs").isDirectory()) {
 				new File(System.getProperty("user.home") + "/worldshardestgame/logs").mkdirs();
 			}
 			
-			if (new File(logFilePath + ".zip").exists()) {
+			if (new File(Game.logFilePath + ".zip").exists()) {
 				LogZipper.unzip(
-					System.getProperty("user.home") + "/worldshardestgame/logs", logFilePath + ".zip");
-				new File(logFilePath + ".zip").delete();
+					System.getProperty("user.home") + "/worldshardestgame/logs", Game.logFilePath + ".zip");
+				new File(Game.logFilePath + ".zip").delete();
 			}
 			
 			try {
-				if (new File(logFilePath).exists() && new BufferedReader(new FileReader(logFilePath)).readLine() != null) {
-					TextFileWriter.appendToFile(logFilePath, "\n");
+				if (new File(Game.logFilePath).exists() && new BufferedReader(new FileReader(Game.logFilePath)).readLine() != null) {
+					TextFileWriter.appendToFile(Game.logFilePath, "\n");
 				}
 			} catch (IOException e) {
-				easyLog(logger, Level.WARNING, getStringFromStackTrace(e));
+				Game.easyLog(Game.logger, Level.WARNING, Game.getStringFromStackTrace(e));
 			}
 		}
 		
-		easyLog(logger, Level.INFO, "Starting The World's Hardest Game");
+		Game.easyLog(Game.logger, Level.INFO, "Starting The World's Hardest Game");
 		
 		TinySound.init();
-		easyLog(logger, Level.INFO, "TinySound initialized");
+		Game.easyLog(Game.logger, Level.INFO, "TinySound initialized");
 		
-		if (muted) TinySound.setGlobalVolume(0);
+		if (Game.muted) TinySound.setGlobalVolume(0);
 		
-		window = new Game();
-
+		Input.init();
+		Game.easyLog(Game.logger, Level.INFO, "Input initialized");
+		
 		frame.setTitle("World's Hardest Game");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(new Dimension(800, 622));
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
-		frame.add(window);
+		
+		game = new Game();
+		frame.add(game);
 		
 		frame.setIconImage(new ImageIcon(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/favicon.png")).getImage());
 		frame.setVisible(true);
-		
-		Input.init();
-		easyLog(logger, Level.INFO, "Input initialized");
-		
 	}
+	
 }

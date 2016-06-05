@@ -14,13 +14,13 @@ import kuusisto.tinysound.TinySound;
 
 public class Input {
 	
-	/** The coordinates of the mouse relative to the frame. */
+	/** The coordinates of the mouse relative to the Game.frame. */
 	static Point mouseCoords = new Point(0, 0);
 	
 	/** True/false depending on if the mouse is pressed. */
 	static boolean mousePressed = false;
 	
-	/** True/false depending on if the mouse is over the frame. */
+	/** True/false depending on if the mouse is over the Game.frame. */
 	static boolean mouseOnWindow = false;
 	
 	/** Used to easily store information of keys. */

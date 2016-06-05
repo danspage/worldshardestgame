@@ -6,6 +6,12 @@ import java.awt.geom.Ellipse2D;
 
 public class Coin {
 	
+	@Override
+	public String toString() {
+		return "Coin [x=" + x + ", y=" + y + ", snapX=" + snapX + ", snapY="
+				+ snapY + ", collected=" + collected + "]";
+	}
+
 	private int x;
 	private int y;
 	private double snapX;

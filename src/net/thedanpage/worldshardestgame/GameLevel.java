@@ -13,6 +13,16 @@ import java.util.logging.Level;
 
 public class GameLevel {
 	
+	@Override
+	public String toString() {
+		return "GameLevel [spawnPoint=" + spawnPoint + ", id=" + id
+				+ ", levelTitle=" + levelTitle + ", tileMap=" + tileMap
+				+ ", dots=" + dots + ", coins=" + coins + ", levelArea="
+				+ levelArea + "]";
+	}
+
+
+
 	/** Spawn point of the level. */
 	private Point spawnPoint;
 	
@@ -52,25 +62,40 @@ public class GameLevel {
 		this.levelTitle = "\"Intimidating message\nhere\"";
 	}
 	
+	/**
+	 * @return spawnPoint
+	 */
 	public Point getSpawnPoint() {
 		return this.spawnPoint;
 	}
 	
+	/**
+	 * @return id
+	 */
 	public int getID() {
 		return this.id;
 	}
 	
+	/**
+	 * @return tileMap
+	 */
 	public ArrayList<Tile> getTileMap() {
 		return this.tileMap;
 	}
 	
+	/**
+	 * @return levelTitle
+	 */
 	public String getTitle() {
 		return this.levelTitle;
 	}
 	
 	
 	
-	/** Draw the tiles based on a text file in the maps package. */
+	/** Draw the tiles based on a text file in the maps package. 
+	 * 
+	 * 
+	 * */
 	public void drawTiles(Graphics g) {
 		
 		Graphics2D g2 = (Graphics2D) g;
@@ -93,36 +118,7 @@ public class GameLevel {
 			
 			for (Tile t : this.tileMap) {
 				
-				if (t.getType() != 0) {
-					//Floor Tile
-					if (t.getType() == 1) {
-					
-						if (t.getSnapX() % 2 == 0) {
-							if (t.getSnapY() % 2 == 0) {
-								g.setColor(new Color(230, 230, 255));
-							} else {
-								g.setColor(Color.WHITE);
-							}
-						} else if (t.getSnapX() % 2 == 1) {
-							if (t.getSnapY() % 2 == 0) {
-								g.setColor(Color.WHITE);
-							} else {
-								g.setColor(new Color(230, 230, 255));
-							}
-						}
-						g.fillRect(t.getX(), t.getY() + 22, 40, 40);
-					
-					//Checkpoint
-					} else if (t.getType() == 2) {
-						g.setColor(new Color(181, 254, 180));
-						g.fillRect(t.getX(), t.getY() + 22, 40, 40);
-						
-					//Goal
-					} else if (t.getType() == 3) {
-						g.setColor(new Color(181, 254, 180));
-						g.fillRect(t.getX(), t.getY() + 22, 40, 40);
-					}
-				}
+				t.draw(this, g);
 				
 			}
 		} catch (Exception e) {

@@ -7,6 +7,16 @@ import java.awt.geom.Ellipse2D;
 
 public class Dot {
 	
+	@Override
+	public String toString() {
+		return "Dot [pos1=" + pos1 + ", pos2=" + pos2 + ", x=" + x + ", y=" + y
+				+ ", snapX=" + snapX + ", snapY=" + snapY + ", speed=" + speed
+				+ ", moveToPos1=" + moveToPos1 + ", vertMovement="
+				+ vertMovement + "]";
+	}
+
+
+
 	/** The first point that the dot will move between. */
 	private Point pos1;
 	
