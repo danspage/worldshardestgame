@@ -163,12 +163,9 @@ public class Game extends JPanel implements ActionListener {
             showIntro = false;
             gameState = LEVEL_TITLE;
             easyLog(logger, Level.INFO, "Game state set to LEVEL_TITLE");
-
             player.reset();
-
             levelNum = 1;
             level.init(player, levelNum);
-
             gameState = LEVEL;
             easyLog(logger, Level.INFO, "Game state set to LEVEL");
 		}
@@ -180,136 +177,30 @@ public class Game extends JPanel implements ActionListener {
 	 */
 	private void render(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
-		
-		if (gameState == INTRO) {
-			
-			//Background
-			g2.setPaint(new GradientPaint(0, 0, new Color(213, 213, 255), 0, 600, Color.WHITE));
-			g2.fillRect(0, 0, 800, 600);
-			
-			g2.setFont(new Font("Tahoma", Font.BOLD, 50));
-			g2.setColor(new Color(0, 0, 0, introTextOpacity));
-			drawCenteredString("Made by Dan95363", 400, 250, g2);
-			
-		} else if (gameState == MAIN_MENU) {
-			
-			if (showIntro) {
-				//Instructions
-				g2.setFont(new Font("Tahoma", Font.BOLD, 20));
-				g2.setColor(Color.BLACK);
-				drawString("You are the red square. Avoid the blue circles and collect the\n" +
-						   "yellow circles. Once you have collected all of the yellow\n" +
-						   "circles, move to the green beacon to complete the level.\n" +
-						   "Some levels consist of more than one beacon; the\n" +
-						   "intermediary beacons act as checkpoints. You must complete\n" +
-						   "all 30 levels in order to submit your score. Your score is a\n" +
-						   "reflection of how many times you have died; the less, the better.", 30, 40, g2);
-				
-				g2.setColor(Color.BLUE);
-				drawCenteredString("Press enter to continue", 400, 350, g2);
-			} else {
-				//Background
-				g2.setPaint(new GradientPaint(0, 0, new Color(213, 213, 255), 0, 600, Color.WHITE));
-				g2.fillRect(0, 0, 800, 600);
-				
-				//Draw and outline the title
-				g2.setPaint(Color.BLACK);
-				g2.setFont(new Font("SansSerif", Font.BOLD, 32));
-				g2.drawString("The world's...", 40, 60);
-				g2.setPaint(new Color(66, 117, 192));
-				g2.setFont(new Font("SansSerif", Font.BOLD, 80));
-				g2.drawString("HARDEST GAME", 40, 145);
-				g2.setPaint(Color.BLACK);
-				drawTextOutline("HARDEST GAME", 40, 145, 5, g2);
-				
-				g2.setFont(new Font("SansSerif", Font.BOLD, 60));
-				
-				//Gradient of "play game" text depending on the mouse location
-				if (Input.mouseCoords.x > 284 && Input.mouseCoords.y < 343
-						&& Input.mouseCoords.x < 515 && Input.mouseCoords.y > 192) {
-					g2.setPaint(new GradientPaint(0, 175, new Color(220, 220, 220), 0, 255, new Color(190, 60, 60)));
-				} else {
-					g2.setPaint(new GradientPaint(0, 175, Color.WHITE, 0, 255, Color.RED));
-				}
-				
-				//Draw and outline the "play game" text
-				drawCenteredString("PLAY", 400, 255, g2);
-				drawCenteredString("GAME", 400, 320, g2);
-				g2.setColor(Color.BLACK);
-				drawTextOutline("PLAY", 315, 255, 3, g2);
-				drawTextOutline("GAME", 302, 320, 3, g2);
-			}
-			
-		} else if (gameState == LEVEL) {
-			
-			if (levelNum != 0) {
-				level.drawTiles(g);
-				
-				level.drawCoins(g);
-				
-				level.drawDots(g);
-				level.updateDots();
-				
-				player.draw(g);
-				player.update(level, controller);
-				
-				g.setColor(Color.BLACK);
-				g.fillRect(0, 0, 800, 22);
-				
-				g.setColor(Color.WHITE);
-				g.setFont(new Font("Tahoma", Font.BOLD, 18));
-				drawRightJustifiedString("Deaths: " + player.getDeaths(), 750, 17, g);
-				drawCenteredString(levelNum + "/" + totalLevels, 400, 17, g);
-				
-				if (Input.mouseOnWindow && Input.mouseCoords.x <= 65 && Input.mouseCoords.y <= 22) {
-					g.setColor(Color.LIGHT_GRAY);
-				}
-				g.drawString("MENU", 0, 17);
-				
-				if (muted) {
-					g.drawImage(VOLUME_WHITE_MUTE, 760, -12, null);
-				} else {
-					g.drawImage(VOLUME_WHITE, 760, -12, null);
-				}
-			}
-			
-		} else if (gameState == LEVEL_TITLE) {
-			//Background
-			g2.setPaint(new GradientPaint(0, 0, new Color(213, 213, 255), 0, 600, Color.WHITE));
-			g2.fillRect(0, 0, 800, 600);
-			
-			//Draw the title text
-			g2.setFont(new Font("Tahoma", Font.BOLD, 48));
-			g.setColor(Color.BLACK);
-			int textY = 200;
-			for (String s : level.getTitle().split("\n")) {
-				drawCenteredString(s, 400, textY += g.getFontMetrics().getHeight(), g);
-			}
+		if (levelNum == 0) {
+			g.dispose();
+			return;
 		}
-		
-		if (gameState != LEVEL) {
-			if (muted) {
-				g.drawImage(VOLUME_BLACK_MUTE, 760, -12, null);
-			} else {
-				g.drawImage(VOLUME_BLACK, 760, -12, null);
-			}
-		}
-		
+		level.drawTiles(g);
+		level.drawCoins(g);
+		level.drawDots(g);
+		level.updateDots();
+		player.draw(g);
+		player.update(level, controller);
+
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, 800, 22);
+		g.setColor(Color.WHITE);
+		g.setFont(new Font("Tahoma", Font.BOLD, 18));
+		drawRightJustifiedString("Deaths: " + player.getDeaths(), 750, 17, g);
+		drawCenteredString(levelNum + "/" + totalLevels, 400, 17, g);
 		g.dispose();
 	}
-	
-	
-	
-	
-	
+
 	public void actionPerformed(ActionEvent arg0) {
 		repaint();
 	}
-	
-	
-	
-	
-	
+
 	/** Draw a string centered on its x axis.
 	 * 
 	 * @param text
@@ -482,44 +373,35 @@ public class Game extends JPanel implements ActionListener {
 		}
 	}
 	
-	
-	
-	
-	
-	public static void main(String[] args) {
-
-		Game.doLogging = false;
-		
+	public static void loadLevels() {
 		try {
 			while (new File(ClassLoader
 					.getSystemResource("net/thedanpage/worldshardestgame/resources/maps/level_" + (totalLevels+1) + ".txt").toURI())
-							.exists()) {
+					.exists()) {
 				totalLevels++;
 			}
 		} catch (Exception e) {
 			System.out.println("Total levels: " + totalLevels);
 		}
+	}
 
-		TinySound.init();
-
-		if (Game.muted) TinySound.setGlobalVolume(0);
-		
-		Input.init();
-
+	public static void setupFrame() {
 		frame.setTitle("World's Hardest Game");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(new Dimension(800, 622));
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
+		frame.setIconImage(new ImageIcon(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/favicon.png")).getImage());
+	}
+	
+	public static void main(String[] args) {
+		TinySound.init();
+
+		loadLevels();
+		setupFrame();
 		
 		game = new Game();
 		frame.add(game);
-		
-		frame.setIconImage(new ImageIcon(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/favicon.png")).getImage());
 		frame.setVisible(true);
-
-		while(true) {
-			game.player.update(game.getLevel(), game.controller);
-		}
 	}
 }
