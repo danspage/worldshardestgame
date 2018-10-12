@@ -9,6 +9,8 @@ import java.util.logging.Level;
 
 import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
+import net.thedanpage.worldshardestgame.controllers.Controller;
+import net.thedanpage.worldshardestgame.controllers.ExampleController;
 
 public class Player {
 	
@@ -23,6 +25,7 @@ public class Player {
 	 * snapX = x/40
 	 */
 	private int snapX;
+
 
 	/**
 	 * The Y coordinate of the player, snapped to the grid of 40x40 tiles.
@@ -225,7 +228,7 @@ public class Player {
 	
 	
 	
-	public void update(GameLevel level) {
+	public void update(GameLevel level, Controller controller) {
 		this.snapX = this.x / 40;
 		this.snapY = this.y / 40;
 		
@@ -288,10 +291,7 @@ public class Player {
 				this.respawn(level);
 			}
 		} else {
-			if (Input.up.isPressed && !this.collidingUp) this.y --;
-			if (Input.down.isPressed && !this.collidingDown) this.y ++;
-			if (Input.left.isPressed && !this.collidingLeft) this.x --;
-			if (Input.right.isPressed && !this.collidingRight) this.x ++;
+			move(controller.getMove(level));
 		}
 		
 		if (this.x > 800) this.x = 0;
@@ -318,7 +318,24 @@ public class Player {
 	
 	
 	
-	
+	public void move(Move move) {
+		switch (move) {
+			case LEFT:
+				if(!collidingLeft) this.x--;
+				break;
+			case RIGHT:
+				if(!collidingRight) this.x++;
+				break;
+			case DOWN:
+				if(!collidingDown) this.y++;
+				break;
+			case UP:
+				if(!collidingUp) this.y--;
+				break;
+			case NEUTRAL:
+				break;
+		}
+	}
 	
 	public int getX() {
 		return this.x;

@@ -36,6 +36,8 @@ import javax.swing.Timer;
 import kuusisto.tinysound.Music;
 import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
+import net.thedanpage.worldshardestgame.controllers.Controller;
+import net.thedanpage.worldshardestgame.controllers.ExampleController;
 
 public class Game extends JPanel implements ActionListener {
 	
@@ -65,7 +67,8 @@ public class Game extends JPanel implements ActionListener {
 	/** Used for when the instructions should be shown. */
 	private boolean showIntro = false;
 	
-	
+	public Controller controller = new ExampleController();
+
 	/** This is the level that the player is on. */
 	static int levelNum = 0;
 	
@@ -73,7 +76,7 @@ public class Game extends JPanel implements ActionListener {
 	private Player player = new Player();
 	
 	/** The data of the current level. This should be given data in initLevel(). */
-	static GameLevel level = new GameLevel();
+	public static GameLevel level = new GameLevel();
 	
 	/** Controls whether the game has sound or not. */
 	static boolean muted = false;
@@ -130,12 +133,14 @@ public class Game extends JPanel implements ActionListener {
 	Sound bell = TinySound.loadSound(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/bell.wav"));
 	
 	
-	
+	public GameLevel getLevel() {
+		return level;
+	}
 	
 	
 	public void paintComponent(final Graphics g) {
 		super.paintComponent(g);
-		
+
 		update(g);
 		render(g);
 	
@@ -154,18 +159,18 @@ public class Game extends JPanel implements ActionListener {
 	 * @param g
 	 * */
 	public void update(Graphics g) {
-		
+
 		if (gameState == INTRO) {
-			
+
 			if (introTextOpacity == 0 && !fadeOutIntro) {
 				drone.play();
 			}
-			
+
 			if (introTextOpacity < 255 && !fadeOutIntro) {
 				introTextOpacity += 255/10;
 				if (introTextOpacity > 255) introTextOpacity = 255;
 			}
-			
+
 			if (introTextOpacity == 225) {
 				new Thread() {
 					public void run() {
@@ -179,36 +184,36 @@ public class Game extends JPanel implements ActionListener {
 					}
 				}.start();
 			}
-			
+
 			if (fadeOutIntro) {
 				if (introTextOpacity > 0) {
 					introTextOpacity -= 255/20;
 					if (introTextOpacity < 0) introTextOpacity = 0;
 				}
 			}
-				
+
 			if (fadeOutIntro && introTextOpacity == 0 && !endIntro.isAlive()) {
 				endIntro.start();
 			}
-			
-			
-			
-			
-			
+
+
+
+
+
 		} else if (gameState == MAIN_MENU) {
-				
+
 			if (showIntro) {
-				
+
 				if (Input.enter.isPressed) {
 					showIntro = false;
 					gameState = LEVEL_TITLE;
 					easyLog(logger, Level.INFO, "Game state set to LEVEL_TITLE");
-					
+
 					player.reset();
-					
+
 					levelNum = 1;
 					level.init(player, levelNum);
-					
+
 					//Wait 1.75 seconds then start the level.
 					new Thread() {
 						public void run() {
@@ -219,13 +224,13 @@ public class Game extends JPanel implements ActionListener {
 					}.start();
 				}
 			} else {
-				
+
 				//Click to start the first level
 				if (Input.mousePressed && Input.mouseCoords.x > 304 && Input.mouseCoords.y < 323
 						&& Input.mouseCoords.x < 515 && Input.mouseCoords.y > 192) {
 					showIntro = true;
 					bell.play();
-				}	
+				}
 			}
 			
 		} else if (gameState == LEVEL) {
@@ -319,7 +324,7 @@ public class Game extends JPanel implements ActionListener {
 				level.updateDots();
 				
 				player.draw(g);
-				player.update(level);
+				player.update(level, controller);
 				
 				g.setColor(Color.BLACK);
 				g.fillRect(0, 0, 800, 22);
@@ -555,36 +560,8 @@ public class Game extends JPanel implements ActionListener {
 	
 	
 	public static void main(String[] args) {
-		
-		int option = JOptionPane.showConfirmDialog(
-				new Dialog(frame, true),
-				"Would you like to enable logging to " + System.getProperty("user.home") + "/worldshardestgame/logs?",
-				"Setup",
-				JOptionPane.YES_NO_OPTION);
-		if (option == JOptionPane.YES_OPTION) Game.doLogging = true;
-		else Game.doLogging = false;
-		
-		if (Game.doLogging) {
-			
-			//Create directory for logs if it does not exist
-			if (!new File(System.getProperty("user.home") + "/worldshardestgame/logs").isDirectory()) {
-				new File(System.getProperty("user.home") + "/worldshardestgame/logs").mkdirs();
-			}
-			
-			if (new File(Game.logFilePath + ".zip").exists()) {
-				LogZipper.unzip(
-					System.getProperty("user.home") + "/worldshardestgame/logs", Game.logFilePath + ".zip");
-				new File(Game.logFilePath + ".zip").delete();
-			}
-			
-			try {
-				if (new File(Game.logFilePath).exists() && new BufferedReader(new FileReader(Game.logFilePath)).readLine() != null) {
-					TextFileWriter.appendToFile(Game.logFilePath, "\n");
-				}
-			} catch (IOException e) {
-				Game.easyLog(Game.logger, Level.WARNING, Game.getStringFromStackTrace(e));
-			}
-		}
+
+		Game.doLogging = false;
 		
 		try {
 			while (new File(ClassLoader
@@ -595,17 +572,13 @@ public class Game extends JPanel implements ActionListener {
 		} catch (Exception e) {
 			System.out.println("Total levels: " + totalLevels);
 		}
-		
-		Game.easyLog(Game.logger, Level.INFO, "Starting The World's Hardest Game");
-		
+
 		TinySound.init();
-		Game.easyLog(Game.logger, Level.INFO, "TinySound initialized");
-		
+
 		if (Game.muted) TinySound.setGlobalVolume(0);
 		
 		Input.init();
-		Game.easyLog(Game.logger, Level.INFO, "Input initialized");
-		
+
 		frame.setTitle("World's Hardest Game");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(new Dimension(800, 622));
@@ -617,6 +590,9 @@ public class Game extends JPanel implements ActionListener {
 		
 		frame.setIconImage(new ImageIcon(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/favicon.png")).getImage());
 		frame.setVisible(true);
+
+		while(true) {
+			game.player.update(game.getLevel(), game.controller);
+		}
 	}
-	
 }
