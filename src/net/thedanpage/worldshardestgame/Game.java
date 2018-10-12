@@ -62,7 +62,7 @@ public class Game extends JPanel implements ActionListener {
 	static final int INTRO = 0, MAIN_MENU = 1, LEVEL_TITLE = 2, LEVEL = 3;
 	
 	/** The integer used for the game state. */
-	static int gameState = INTRO;
+	static int gameState = MAIN_MENU;
 	
 	/** Used for when the instructions should be shown. */
 	private boolean showIntro = false;
@@ -159,93 +159,20 @@ public class Game extends JPanel implements ActionListener {
 	 * @param g
 	 * */
 	public void update(Graphics g) {
+		if (gameState == MAIN_MENU) {
+            showIntro = false;
+            gameState = LEVEL_TITLE;
+            easyLog(logger, Level.INFO, "Game state set to LEVEL_TITLE");
 
-		if (gameState == INTRO) {
+            player.reset();
 
-			if (introTextOpacity == 0 && !fadeOutIntro) {
-				drone.play();
-			}
+            levelNum = 1;
+            level.init(player, levelNum);
 
-			if (introTextOpacity < 255 && !fadeOutIntro) {
-				introTextOpacity += 255/10;
-				if (introTextOpacity > 255) introTextOpacity = 255;
-			}
-
-			if (introTextOpacity == 225) {
-				new Thread() {
-					public void run() {
-						try {
-							Thread.sleep(3500);
-						} catch (InterruptedException e) {
-							TextFileWriter.appendToFile(logFilePath, e.getMessage());
-						}
-						fadeOutIntro = true;
-						bgMusic.start();
-					}
-				}.start();
-			}
-
-			if (fadeOutIntro) {
-				if (introTextOpacity > 0) {
-					introTextOpacity -= 255/20;
-					if (introTextOpacity < 0) introTextOpacity = 0;
-				}
-			}
-
-			if (fadeOutIntro && introTextOpacity == 0 && !endIntro.isAlive()) {
-				endIntro.start();
-			}
-
-
-
-
-
-		} else if (gameState == MAIN_MENU) {
-
-			if (showIntro) {
-
-				if (Input.enter.isPressed) {
-					showIntro = false;
-					gameState = LEVEL_TITLE;
-					easyLog(logger, Level.INFO, "Game state set to LEVEL_TITLE");
-
-					player.reset();
-
-					levelNum = 1;
-					level.init(player, levelNum);
-
-					//Wait 1.75 seconds then start the level.
-					new Thread() {
-						public void run() {
-							try { Thread.sleep(1750); } catch (InterruptedException e) { TextFileWriter.appendToFile(logFilePath, e.getMessage()); }
-							gameState = LEVEL;
-							easyLog(logger, Level.INFO, "Game state set to LEVEL");
-						}
-					}.start();
-				}
-			} else {
-
-				//Click to start the first level
-				if (Input.mousePressed && Input.mouseCoords.x > 304 && Input.mouseCoords.y < 323
-						&& Input.mouseCoords.x < 515 && Input.mouseCoords.y > 192) {
-					showIntro = true;
-					bell.play();
-				}
-			}
-			
-		} else if (gameState == LEVEL) {
-			
-			if (Input.mouseOnWindow && Input.mouseCoords.x <= 65 && Input.mouseCoords.y <= 22
-					&& Input.mousePressed) {
-				gameState = MAIN_MENU;
-				easyLog(logger, Level.INFO, "Game state set to MAIN_MENU");
-			}
+            gameState = LEVEL;
+            easyLog(logger, Level.INFO, "Game state set to LEVEL");
 		}
 	}
-	
-	
-	
-	
 	
 	/** Draw the game's graphics.
 	 * 
