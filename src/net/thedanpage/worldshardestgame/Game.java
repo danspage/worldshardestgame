@@ -70,7 +70,7 @@ public class Game extends JPanel implements ActionListener {
 	/** Used for when the instructions should be shown. */
 	private boolean showIntro = false;
 	
-	public Controller controller = new ExampleController();
+	public Controller controller;
 
 	/** This is the level that the player is on. */
 	static int levelNum = 0;
@@ -93,7 +93,7 @@ public class Game extends JPanel implements ActionListener {
 			"net/thedanpage/worldshardestgame/resources/volume_white.png")).getImage();
 	private final Image VOLUME_WHITE_MUTE = new ImageIcon(ClassLoader.getSystemResource(
 			"net/thedanpage/worldshardestgame/resources/volume_white_mute.png")).getImage();
-	
+
 	/** Background music. */
 	static Thread bgMusic = new Thread() {
 		public void run() {
@@ -120,7 +120,6 @@ public class Game extends JPanel implements ActionListener {
 	
 	private static int totalLevels = 0;
 	
-	
 	//Intro objects
 	
 	/** True if the intro text should move down. */
@@ -135,7 +134,10 @@ public class Game extends JPanel implements ActionListener {
 	/** A bell sound. */
 	Sound bell = TinySound.loadSound(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/bell.wav"));
 	
-	
+	public Game(Controller controller) {
+		this.controller = controller;
+	}
+
 	public GameLevel getLevel() {
 		return level;
 	}
@@ -398,8 +400,9 @@ public class Game extends JPanel implements ActionListener {
 
 		loadLevels();
 		setupFrame();
-		
-		game = new Game();
+
+		var controller = new ExampleController();
+		game = new Game(controller);
 		frame.add(game);
 		frame.setVisible(true);
 	}
