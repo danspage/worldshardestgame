@@ -39,6 +39,9 @@ import kuusisto.tinysound.TinySound;
 import net.thedanpage.worldshardestgame.controllers.Controller;
 import net.thedanpage.worldshardestgame.controllers.ExampleController;
 
+import static java.lang.Thread.currentThread;
+import static java.lang.Thread.sleep;
+
 public class Game extends JPanel implements ActionListener {
 	
 	/** An instance of the game. */
@@ -104,7 +107,7 @@ public class Game extends JPanel implements ActionListener {
 	Thread endIntro = new Thread() {
 		public void run() {
 			try {
-				Thread.sleep(1500);
+				sleep(1500);
 			} catch (InterruptedException e) {
 				TextFileWriter.appendToFile(logFilePath, e.getMessage());
 			}
@@ -335,11 +338,7 @@ public class Game extends JPanel implements ActionListener {
 			}
 		}
 	}
-	
-	
-	
-	
-	
+
 	/**
 	 * Easily log a string of text, and write it to the log file
 	 * 
