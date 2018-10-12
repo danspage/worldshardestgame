@@ -401,6 +401,8 @@ public class Game extends JPanel implements ActionListener {
 		loadLevels();
 		setupFrame();
 
+        bgMusic.start();
+
 		var controller = new ExampleController();
 		game = new Game(controller);
 		frame.add(game);
