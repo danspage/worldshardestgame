@@ -28,6 +28,8 @@ public class GameLevel {
 	
 	/** The ID of the level. The first level has an ID of 1. */
 	private int id;
+
+	private int levelNum;
 	
 	/** The message that is displayed before the level. */
 	private String levelTitle;
@@ -139,6 +141,36 @@ public class GameLevel {
 		if (this.dots != null)
 			for (Dot dot : this.dots) dot.update();
 	}
+
+	public void resetDots() {
+		this.dots = new ArrayList<Dot>();
+		try {
+			InputStreamReader isr = new InputStreamReader(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/maps/level_" + this.levelNum + ".txt").openStream());
+			Scanner scanner = new Scanner(isr);
+			String content = scanner.useDelimiter("\\Z").next();
+			String[] lines = content.split("\n");
+			scanner.close();
+			for (int i = 19; lines[i] != null; i++) {
+				String line = lines[i];
+				String[] dotData = line.replaceAll(" ", "").split("-");
+				this.dots.add(new Dot(
+					Integer.parseInt(dotData[0]),
+					Integer.parseInt(dotData[1]),
+					new Point(Integer.parseInt(dotData[2].split(",")[0]),
+							Integer.parseInt(dotData[2].split(",")[1])),
+					new Point(Integer.parseInt(dotData[3].split(",")[0]),
+							Integer.parseInt(dotData[3].split(",")[1])),
+					Double.parseDouble(dotData[4]),
+					Boolean.parseBoolean(dotData[5]),
+					Boolean.parseBoolean(dotData[6])
+				));
+			}
+		} catch(Exception e){
+			if (e.getClass().getName() != "java.lang.ArrayIndexOutOfBoundsException") {
+				Game.easyLog(Game.logger, Level.SEVERE, "Dots unable to be loaded:\n" + Game.getStringFromStackTrace(e));
+			}
+		}
+	}
 	
 	
 	
@@ -171,7 +203,9 @@ public class GameLevel {
 		else Game.easyLog(Game.logger, Level.SEVERE, "The file for level " + levelNum + " could not be found");
 		
 		Game.easyLog(Game.logger, Level.INFO, "Level " + Game.levelNum + " is being initialized");
-		
+
+		this.levelNum = levelNum;
+
 		//Clears the tile data
 		this.tileMap = new ArrayList<Tile>();
 		

@@ -214,6 +214,7 @@ public class Player {
 		if (level.coins != null) {
 			for (Coin coin : level.coins) coin.collected = false;
 		}
+		level.resetDots();
 	}
 	
 	
