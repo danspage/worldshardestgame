@@ -63,6 +63,40 @@ public class GameLevel {
 		this.id = id;
 		this.levelTitle = "\"Intimidating message\nhere\"";
 	}
+
+	public boolean isGoalReached(Player player) {
+		if (this.allCoinsCollected()) {
+
+			for (Tile t : this.getTileMap()) {
+
+				if (t.getType() == 3 && player.collidesWith(t.getBounds())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public void reset() {
+		resetDots();
+
+	}
+
+	public double getDistanceToGoal(Player player) {
+		for (Tile t : this.getTileMap()) {
+
+			if (t.getType() == 3) {
+				var tileX = t.getBounds().getCenterX();
+				var tileY = t.getBounds().getCenterY();
+
+				var playerX = player.getBounds().getCenterX();
+				var playerY = player.getBounds().getCenterY();
+
+				return Math.abs(tileX-playerX);
+			}
+		}
+		return -1;
+	}
 	
 	/**
 	 * @return spawnPoint

@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -40,6 +41,7 @@ import kuusisto.tinysound.Sound;
 import kuusisto.tinysound.TinySound;
 import net.thedanpage.worldshardestgame.controllers.Controller;
 import net.thedanpage.worldshardestgame.controllers.ExampleController;
+import net.thedanpage.worldshardestgame.controllers.GeneticController;
 
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
@@ -80,7 +82,10 @@ public class Game extends JPanel implements ActionListener {
     /** A player class, used to get information about the player. */
     private List<Player> population = new ArrayList<>();
 
-    private int populationSize = 1;
+    private int populationSize = 1000;
+    private int playerMoveCount = 5;
+
+    private int generation = 1;
 
     /** The data of the current level. This should be given data in initLevel(). */
     public static GameLevel level = new GameLevel();
@@ -148,6 +153,16 @@ public class Game extends JPanel implements ActionListener {
         return level;
     }
 
+    public void updateFitness() {
+        for(var player : population) {
+            player.fitness = calculateFitness(player);
+        }
+    }
+
+    private double calculateFitness(Player player) {
+        return level.getDistanceToGoal(player);
+    }
+
 
     public void paintComponent(final Graphics g) {
         super.paintComponent(g);
@@ -189,7 +204,6 @@ public class Game extends JPanel implements ActionListener {
      * @param g
      */
     private void render(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
         if (levelNum == 0) {
             g.dispose();
             return;
@@ -198,20 +212,67 @@ public class Game extends JPanel implements ActionListener {
         level.drawCoins(g);
         level.drawDots(g);
         level.updateDots();
-
+        var deadPlayerCount = 0;
         for (var player : population) {
+            if(player.isDead()) deadPlayerCount++;
             player.draw(g);
-            player.update(level, controller);
+            player.update(this, controller);
         }
 
+        if(deadPlayerCount == populationSize) {
+            evaluateGeneration();
+        }
 
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, 800, 22);
         g.setColor(Color.WHITE);
         g.setFont(new Font("Tahoma", Font.BOLD, 18));
-        //drawRightJustifiedString("Deaths: " + player.getDeaths(), 750, 17, g);
+        drawRightJustifiedString("Generation: " + this.generation, 750, 17, g);
         drawCenteredString(levelNum + "/" + totalLevels, 400, 17, g);
         g.dispose();
+    }
+
+    public void evaluateGeneration() {
+        this.generation++;
+        updateFitness();
+        if(this.generation % 5 == 0) {
+            this.playerMoveCount += 5;
+        }
+
+        var bestCandidates = selection();
+        var newPopulation = mutate(bestCandidates);
+        population = newPopulation;
+        level.reset();
+        for(Player player : population) {
+            player.respawn(level);
+        }
+
+        System.out.println("Fitness: " + bestCandidates.get(0).fitness + " MoveCount: " + bestCandidates.get(0).getMoves().length);
+    }
+
+    public List<Player> selection() {
+        Player bestPlayer = null;
+        double bestFitness = Double.MAX_VALUE;
+        for(var player : population) {
+            if(player.fitness < bestFitness) {
+                bestPlayer = player;
+                bestFitness = player.fitness;
+            }
+        }
+        return Arrays.asList(bestPlayer);
+    }
+
+    public List<Player> mutate(List<Player> candidates) {
+        List<Player> children = new ArrayList<>();
+        var childrenCountPerCandidate = populationSize / candidates.size();
+        for(var candidate : candidates) {
+            for(var i = 0; i < childrenCountPerCandidate; i++) {
+                var child = new Player(this.playerMoveCount, candidate.getMoves());
+                child.mutate();
+                children.add(child);
+            }
+        }
+        return children;
     }
 
     public void actionPerformed(ActionEvent arg0) {
@@ -409,7 +470,7 @@ public class Game extends JPanel implements ActionListener {
 
     private void intializePopulation() {
         for (var i = 0; i < populationSize; i++) {
-            population.add(new Player());
+            population.add(new Player(playerMoveCount));
         }
     }
 
@@ -420,7 +481,7 @@ public class Game extends JPanel implements ActionListener {
 
         bgMusic.start();
 
-        var controller = new ExampleController();
+        var controller = new GeneticController();
         game = new Game(controller);
         frame.add(game);
         frame.setVisible(true);

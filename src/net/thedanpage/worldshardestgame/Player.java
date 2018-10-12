@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 import java.util.logging.Level;
 
 import kuusisto.tinysound.Sound;
@@ -56,6 +58,23 @@ public class Player {
 	
 	/** The opacity of the player. */
 	private double opacity;
+
+	private Move[] moves;
+
+	private int nextMoveIndex = 0;
+
+	private double mutationRate = 0.1;
+
+	public double fitness = 0;
+
+	private Random rnd = new Random();
+
+	public Player(int moveCount, Move[] moves) {
+		this(moveCount);
+		for(var i = 0; i < moves.length; i++) {
+			this.moves[i] = moves[i];
+		}
+	}
 	
 	public Player() {
 		this.x = 400;
@@ -70,14 +89,10 @@ public class Player {
 		this.dead = false;
 		this.opacity = 255;
 	}
-	
-	
-	
-	
-	
-	public Player(int x, int y) {
-		this.x = x;
-		this.y = y;
+
+	public Player(int moveCount) {
+		this.x = 400;
+		this.y = 300;
 		this.snapX = x/40;
 		this.snapY = y/40;
 		this.collidingUp = false;
@@ -87,18 +102,51 @@ public class Player {
 		this.deaths = 0;
 		this.dead = false;
 		this.opacity = 255;
+
+		this.moves = new Move[moveCount];
+		initializeRandomMoves();
 	}
-	
-	
-	
+
+	public void initializeRandomMoves() {
+		for(var i = 0; i < this.moves.length; i++) {
+			this.moves[i] = getRandomMove();
+		}
+	}
+
+	public Move[] getMoves() {
+		return this.moves;
+	}
+
+	public Move getRandomMove() {
+		return Move.values()[this.rnd.nextInt(Move.values().length)];
+	}
+
+	public void mutate() {
+		for(var i = 0; i < moves.length; i++) {
+			var randomDouble = rnd.nextDouble();
+			var mutated = randomDouble <= mutationRate;
+			if(mutated) {
+				this.moves[i] = getRandomMove();
+			}
+		}
+	}
+
+	public Move getNextMove() {
+		if(nextMoveIndex >= this.moves.length) {
+			this.dead = true;
+			return Move.NEUTRAL;
+		}
+		return this.moves[nextMoveIndex++];
+	}
+
 	
 	
 	public void draw(Graphics g) {
 		g.setColor(new Color(0, 0, 0, (int) opacity));
-		g.fillRect(x - 15, y - 15 + 22, 31, 31);
+		g.fillRect(x - 15, y - 15 + 22, 28, 28);
 		g.setColor(new Color(255, 0, 0, (int) opacity));
 		g.fillRect(x-12, y-12 + 22,
-				   25, 25);
+				   22, 22);
 	}
 	
 	
@@ -141,7 +189,7 @@ public class Player {
 	
 	
 	public Rectangle getBounds() {
-		return new Rectangle(this.x - 15, this.y - 15, 31, 31);
+		return new Rectangle(this.x - 15, this.y - 15, 28, 28);
 	}
 	
 	
@@ -214,7 +262,6 @@ public class Player {
 		if (level.coins != null) {
 			for (Coin coin : level.coins) coin.collected = false;
 		}
-		level.resetDots();
 	}
 	
 	
@@ -229,9 +276,11 @@ public class Player {
 	
 	
 	
-	public void update(GameLevel level, Controller controller) {
+	public void update(Game game, Controller controller) {
 		this.snapX = this.x / 40;
 		this.snapY = this.y / 40;
+
+		var level = game.getLevel();
 		
 		if (level.coins != null) {
 			for (Coin coin : level.coins) {
@@ -282,17 +331,9 @@ public class Player {
 		checkCollisionRight(level);
 		
 		if (this.dead) {
-			this.opacity -= 255/75;
-			
-			if (this.opacity < 0) this.opacity = 0;
-			
-			if (this.opacity == 0) {
-				this.dead = false;
-				this.opacity = 255;
-				this.respawn(level);
-			}
+			this.opacity = 0;
 		} else {
-			move(controller.getMove(level));
+			move(controller.getMove(game, this));
 		}
 		
 		if (this.x > 800) this.x = 0;
@@ -306,12 +347,12 @@ public class Player {
 					this.deaths ++;
 					this.dead = true;
 					
-					if (!Game.muted) {
+					/*if (!Game.muted) {
 						//Play the smack sound
 						TinySound.init();
 						TinySound.loadSound(ClassLoader.getSystemResource(
 								"net/thedanpage/worldshardestgame/resources/smack.wav")).play();
-					}
+					}*/
 				}
 			}
 		}
