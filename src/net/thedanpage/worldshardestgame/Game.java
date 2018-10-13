@@ -92,7 +92,7 @@ public class Game extends JPanel implements ActionListener {
 
     /** Controls whether the game has sound or not. */
     static boolean muted = false;
-    
+
     /** Background music. */
     static Thread bgMusic = new Thread() {
         public void run() {
@@ -126,12 +126,6 @@ public class Game extends JPanel implements ActionListener {
 
     /** The opacity of the intro text. */
     private int introTextOpacity = 0;
-
-    /** A whoosh sound. */
-    Sound drone = TinySound.loadSound(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/drone.ogg"));
-
-    /** A bell sound. */
-    Sound bell = TinySound.loadSound(ClassLoader.getSystemResource("net/thedanpage/worldshardestgame/resources/bell.wav"));
 
     public Game(Controller controller) {
         this.controller = controller;
