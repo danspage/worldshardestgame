@@ -82,8 +82,8 @@ public class Game extends JPanel implements ActionListener {
     /** A player class, used to get information about the player. */
     private List<Player> population = new ArrayList<>();
 
-    private int populationSize = 10;
-    private int playerMoveCount = 5;
+    private int populationSize = 500;
+    private int playerMoveCount = 500;
 
     private int generation = 1;
 
