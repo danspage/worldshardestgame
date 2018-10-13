@@ -82,7 +82,7 @@ public class Game extends JPanel implements ActionListener {
     /** A player class, used to get information about the player. */
     private List<Player> population = new ArrayList<>();
 
-    private int populationSize = 1000;
+    private int populationSize = 10;
     private int playerMoveCount = 5;
 
     private int generation = 1;
@@ -92,17 +92,7 @@ public class Game extends JPanel implements ActionListener {
 
     /** Controls whether the game has sound or not. */
     static boolean muted = false;
-
-    /** Images for indicating volume. */
-    private final Image VOLUME_BLACK = new ImageIcon(ClassLoader.getSystemResource(
-            "net/thedanpage/worldshardestgame/resources/volume_black.png")).getImage();
-    private final Image VOLUME_BLACK_MUTE = new ImageIcon(ClassLoader.getSystemResource(
-            "net/thedanpage/worldshardestgame/resources/volume_black_mute.png")).getImage();
-    private final Image VOLUME_WHITE = new ImageIcon(ClassLoader.getSystemResource(
-            "net/thedanpage/worldshardestgame/resources/volume_white.png")).getImage();
-    private final Image VOLUME_WHITE_MUTE = new ImageIcon(ClassLoader.getSystemResource(
-            "net/thedanpage/worldshardestgame/resources/volume_white_mute.png")).getImage();
-
+    
     /** Background music. */
     static Thread bgMusic = new Thread() {
         public void run() {
