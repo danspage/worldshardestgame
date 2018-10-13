@@ -119,13 +119,6 @@ public class Game extends JPanel implements ActionListener {
 
     private static int totalLevels = 0;
 
-    //Intro objects
-
-    /** True if the intro text should move down. */
-    private boolean fadeOutIntro = false;
-
-    /** The opacity of the intro text. */
-    private int introTextOpacity = 0;
 
     public Game(Controller controller) {
         this.controller = controller;
