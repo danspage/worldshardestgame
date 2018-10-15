@@ -63,7 +63,7 @@ public class Game extends JPanel implements ActionListener {
     private static final long serialVersionUID = 1L;
 
     /** The frame that the panel goes in. */
-    static JFrame frame = new JFrame();
+    public static JFrame frame = new JFrame();
 
     /** The enum instance used for switching the state of the game. */
     static final int INTRO = 0, MAIN_MENU = 1, LEVEL_TITLE = 2, LEVEL = 3;
@@ -79,10 +79,12 @@ public class Game extends JPanel implements ActionListener {
     /** This is the level that the player is on. */
     static int levelNum = 0;
 
-    /** A player class, used to get information about the player. */
-    private List<Player> population = new ArrayList<>();
+    private boolean replay = true;
+    private int replayLevel = 1;
 
-    private int populationSize = 500;
+    public List<Player> population = new ArrayList<>();
+
+    public int populationSize = 50;
     private int playerMoveCount = 500;
 
     private int generation = 1;
@@ -122,7 +124,6 @@ public class Game extends JPanel implements ActionListener {
 
     public Game(Controller controller) {
         this.controller = controller;
-
         intializePopulation();
     }
 
@@ -153,6 +154,46 @@ public class Game extends JPanel implements ActionListener {
         Toolkit.getDefaultToolkit().sync();
     }
 
+    public void goalReached(Player winnerPlayer) {
+        if (!replay) {
+            advanceToNextLevel();
+        } else {
+            advanceToReplay(winnerPlayer);
+        }
+    }
+
+    private void advanceToNextLevel() {
+        levelNum++;
+        for (var player : population) {
+            player.reset();
+            level.init(player, levelNum);
+        }
+        gameState = LEVEL;
+        easyLog(logger, Level.INFO, "Game state set to LEVEL");
+
+        replay = true;
+    }
+
+    private void advanceToReplay(Player winnerPlayer) {
+        if (replayLevel != levelNum) {
+            replayLevel = levelNum;
+            for (var player : population) {
+                player.goalReached = false;
+                player.setDead(true);
+            }
+            return;
+        }
+        Player replayPlayer = winnerPlayer;
+        replayPlayer.reset();
+        replayPlayer.respawn(level);
+        replayPlayer.setMoves(winnerPlayer.getMoves());
+        replayPlayer.goalReached = false;
+        replayPlayer.nextMoveIndex = 0;
+
+        level.init(replayPlayer, levelNum);
+        replay = false;
+    }
+
 
 
     /** Update the game.
@@ -181,6 +222,10 @@ public class Game extends JPanel implements ActionListener {
      * @param g
      */
     private void render(Graphics g) {
+        var deadPlayerCount = 0;
+        var isGoalReached = false;
+        Player winnerPlayer = null;
+
         if (levelNum == 0) {
             g.dispose();
             return;
@@ -189,15 +234,25 @@ public class Game extends JPanel implements ActionListener {
         level.drawCoins(g);
         level.drawDots(g);
         level.updateDots();
-        var deadPlayerCount = 0;
+
         for (var player : population) {
             if(player.isDead()) deadPlayerCount++;
             player.draw(g);
             player.update(this, controller);
+
+            if (player.goalReached) {
+                winnerPlayer = player;
+                isGoalReached = true;
+                break;
+            }
         }
 
         if(deadPlayerCount == populationSize) {
             evaluateGeneration();
+        }
+
+        if (isGoalReached) {
+            goalReached(winnerPlayer);
         }
 
         g.setColor(Color.BLACK);
@@ -213,7 +268,7 @@ public class Game extends JPanel implements ActionListener {
         this.generation++;
         updateFitness();
         if(this.generation % 5 == 0) {
-            this.playerMoveCount += 5;
+            this.playerMoveCount += 50;
         }
 
         var bestCandidates = selection();
@@ -256,68 +311,23 @@ public class Game extends JPanel implements ActionListener {
         repaint();
     }
 
-    /** Draw a string centered on its x axis.
-     *
-     * @param text
-     * 		the text to be drawn
-     * @param x
-     * 		the x coordinate of the text
-     * @param y
-     * 		the y coordinate of the text
-     * @param g
-     * 		the graphics the text will be drawn with
-     */
     private void drawCenteredString(String s, int w, int h, Graphics g) {
         FontMetrics fm = g.getFontMetrics();
         int x = (w*2 - fm.stringWidth(s)) / 2;
         g.drawString(s, x, h);
     }
 
-
-
-
-
-    /** Draw a string centered on its x axis.
-     *
-     * @param text
-     * 		the text to be drawn
-     * @param x
-     * 		the x coordinate of the text
-     * @param y
-     * 		the y coordinate of the text
-     * @param g2
-     * 		the 2D graphics the text will be drawn with
-     */
     private void drawCenteredString(String s, int w, int h, Graphics2D g2) {
         FontMetrics fm = g2.getFontMetrics();
         int x = (w*2 - fm.stringWidth(s)) / 2;
         g2.drawString(s, x, h);
     }
 
-
-
-
-
-    /** Draw a right-justified string.
-     *
-     * @param text
-     * 		the text to be drawn
-     * @param x
-     * 		the x coordinate of the text
-     * @param y
-     * 		the y coordinate of the text
-     * @param g2
-     * 		the 2D graphics the text will be drawn with
-     */
     private void drawRightJustifiedString(String s, int w, int h, Graphics g) {
         FontMetrics fm = g.getFontMetrics();
         int x = (w - fm.stringWidth(s));
         g.drawString(s, x, h);
     }
-
-
-
-
 
     /** Draw the outline of a string of text.
      *

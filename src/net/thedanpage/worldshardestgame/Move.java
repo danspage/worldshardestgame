@@ -2,8 +2,8 @@ package net.thedanpage.worldshardestgame;
 
 public enum Move {
     UP,
-    DOWN,
     LEFT,
+    DOWN,
     RIGHT,
     NEUTRAL
 }

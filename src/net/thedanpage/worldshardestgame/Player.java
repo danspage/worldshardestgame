@@ -57,13 +57,15 @@ public class Player {
 	private boolean dead;
 
 	/** The opacity of the player. */
-	private double opacity;
+	public double opacity;
+
+	public boolean goalReached = false;
 
 	private Move[] moves;
 
-	private int nextMoveIndex = 0;
+	public int nextMoveIndex = 0;
 
-	private double mutationRate = 0.4;
+	private double mutationRate = 0.1;
 
 	public double fitness = 0;
 
@@ -115,6 +117,9 @@ public class Player {
 
 	public Move[] getMoves() {
 		return this.moves;
+	}
+	public void setMoves(Move[] moves) {
+		this.moves = moves;
 	}
 
 	public Move getRandomMove() {
@@ -296,30 +301,10 @@ public class Player {
 		}
 
 		if (level.getTileMap() != new ArrayList<Tile>()) {
-
 			if (level.allCoinsCollected()) {
-
 				for (Tile t : level.getTileMap()) {
-
 					if (t.getType() == 3 && this.collidesWith(t.getBounds())) {
-
-						Game.levelNum ++;
-						level.init(this, Game.levelNum);
-						Game.gameState = Game.LEVEL_TITLE;
-						Game.easyLog(Game.logger, Level.INFO, "Game state set to LEVEL_TITLE");
-
-						//Wait 1.75 seconds then start the level.
-						new Thread() {
-							public void run() {
-								try {
-									Thread.sleep(1750);
-								} catch (InterruptedException e) {
-									Game.easyLog(Game.logger, Level.SEVERE, Game.getStringFromStackTrace(e));
-								}
-								Game.gameState = Game.LEVEL;
-								Game.easyLog(Game.logger, Level.INFO, "Game state set to LEVEL");
-							}
-						}.start();
+						goalReached = true;
 					}
 				}
 			}
